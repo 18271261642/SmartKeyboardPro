@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.hjq.shape.layout.ShapeLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:shape_startColor="#343348"
+    app:shape_endColor="#191C24"
+    app:shape_angle="270"
+    app:shape_topLeftRadius="@dimen/dp_10"
+    app:shape_topRightRadius="@dimen/dp_10"
+    android:orientation="vertical"
+    android:layout_height="wrap_content">
+
+
+    <TextView
+        android:id="@+id/uploadDialogTitleTv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/string_choose_title"
+        android:textColor="@color/white"
+        android:textSize="@dimen/sp_20"
+        android:layout_marginTop="@dimen/dp_30"
+        android:layout_marginStart="@dimen/dp_15"
+        android:layout_marginEnd="@dimen/dp_15"
+        android:gravity="center"/>
+
+    <com.hjq.shape.view.ShapeTextView
+        android:id="@+id/uploadDialogUploadTv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:text="@string/string_upload_to_screen"
+        app:shape_solidColor="#F86849"
+        app:shape_solidPressedColor="#90F86849"
+        android:gravity="center"
+        android:padding="@dimen/dp_10"
+        app:shape_radius="@dimen/dp_25"
+        android:layout_marginStart="@dimen/dp_20"
+        android:layout_marginEnd="@dimen/dp_20"
+        android:layout_marginTop="@dimen/dp_20"
+        android:textSize="@dimen/sp_20"/>
+
+
+    <com.hjq.shape.view.ShapeTextView
+        android:id="@+id/uploadDialogDeleteTv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:text="@string/string_delete_animation"
+        app:shape_solidColor="#F86849"
+        app:shape_solidPressedColor="#90F86849"
+        android:gravity="center"
+        android:padding="@dimen/dp_10"
+        app:shape_radius="@dimen/dp_25"
+        android:layout_marginTop="@dimen/dp_15"
+        android:layout_marginStart="@dimen/dp_20"
+        android:layout_marginEnd="@dimen/dp_20"
+        android:textSize="@dimen/sp_20"/>
+
+
+    <com.hjq.shape.view.ShapeTextView
+        android:id="@+id/uploadDialogCusSpeedUpTv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:text="@string/string_cus_speed_and_upload"
+        app:shape_solidColor="#F86849"
+        app:shape_solidPressedColor="#90F86849"
+        android:gravity="center"
+        android:padding="@dimen/dp_10"
+        app:shape_radius="@dimen/dp_25"
+        android:layout_marginTop="@dimen/dp_15"
+        android:layout_marginStart="@dimen/dp_20"
+        android:layout_marginEnd="@dimen/dp_20"
+        android:textSize="@dimen/sp_20"/>
+
+    <com.hjq.shape.view.ShapeTextView
+        android:id="@+id/uploadDialogCancelTv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:text="@string/common_cancel"
+        app:shape_solidColor="#292E3C"
+        app:shape_solidPressedColor="#90292E3C"
+        android:gravity="center"
+        android:padding="@dimen/dp_10"
+        app:shape_radius="@dimen/dp_25"
+        android:layout_marginTop="@dimen/dp_15"
+        android:layout_marginStart="@dimen/dp_20"
+        android:layout_marginEnd="@dimen/dp_20"
+        android:layout_marginBottom="@dimen/dp_30"
+        android:textSize="@dimen/sp_20"/>
+</com.hjq.shape.layout.ShapeLinearLayout>

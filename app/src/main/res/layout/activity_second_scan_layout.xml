@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/second_theme_color"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:keepScreenOn="true"
+    android:layout_height="match_parent">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_40"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <ImageView
+            android:id="@+id/scanLeftImageView"
+            android:layout_margin="@dimen/dp_10"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_white_left_back"/>
+
+        <TextView
+            android:id="@+id/scanTitleTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="@dimen/sp_18"
+            android:text="@string/string_conn_device"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+
+        <ProgressBar
+            android:id="@+id/scanProgressBar"
+            android:layout_width="@dimen/dp_30"
+            android:layout_height="@dimen/dp_30"
+            android:layout_marginEnd="@dimen/dp_10"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:layout_margin="@dimen/dp_10"
+        android:text="@string/string_has_conn_device"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/secondConnRecyclerView"
+        android:layout_width="match_parent"
+        tools:listitem="@layout/item_second_scan_layout"
+        android:layout_margin="@dimen/dp_10"
+        android:layout_height="wrap_content"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:layout_margin="@dimen/dp_10"
+        android:text="@string/string_no_bind_device"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/secondScanRy"
+        tools:listitem="@layout/item_second_scan_layout"
+        android:layout_margin="@dimen/dp_10"/>
+
+
+    <TextView
+        android:id="@+id/scanBleTv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textColor="@color/white"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:gravity="center"
+        android:text="蓝牙已关闭"/>
+
+</LinearLayout>
