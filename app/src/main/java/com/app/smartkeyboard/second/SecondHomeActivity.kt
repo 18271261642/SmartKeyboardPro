@@ -13,6 +13,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.Message
 import android.view.KeyEvent
 import android.view.View
 import android.widget.LinearLayout
@@ -77,6 +78,18 @@ class SecondHomeActivity : AppActivity() {
     private var mPagerAdapter: FragmentPagerAdapter<AppFragment<*>>? = null
 
     private var secondHomeMenuView: HomeMenuView? = null
+
+
+    private val handlers: Handler = object : Handler(Looper.getMainLooper()) {
+        override fun handleMessage(msg: Message) {
+            super.handleMessage(msg)
+            if (msg.what == 0x00) {
+
+            }
+
+        }
+    }
+
 
     override fun getLayoutId(): Int {
         return R.layout.activity_second_home_layout
@@ -373,6 +386,7 @@ class SecondHomeActivity : AppActivity() {
                 }
 
                 onConnStatusListener?.onConnState(ConnStatus.CONNECTED)
+                handlers.sendEmptyMessageDelayed(0x00,8000)
               //  showVersion()
 
                // setDialogTxtShow(resources.getString(R.string.string_upgrade_success))

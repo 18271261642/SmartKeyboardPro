@@ -5,12 +5,14 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import com.app.smartkeyboard.R
 import com.app.smartkeyboard.bean.AlarmWeekBean
 import com.google.gson.Gson
 import com.hjq.shape.view.ShapeTextView
+import com.hjq.shape.view.ShapeView
 import timber.log.Timber
 
 class AlarmWeekAdapter(private val context: Context,private val list : MutableList<AlarmWeekBean>) : Adapter<AlarmWeekAdapter.WeekViewHolder>(){
@@ -23,7 +25,8 @@ class AlarmWeekAdapter(private val context: Context,private val list : MutableLi
 
 
     class WeekViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
-        val tv = itemView.findViewById<ShapeTextView>(R.id.itemEditAlarmWeekTv)
+        val tv = itemView.findViewById<ShapeView>(R.id.itemEditAlarmWeekTv)
+        val wkNameTv = itemView.findViewById<TextView>(R.id.itemAlarmWkTv)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WeekViewHolder {
@@ -36,24 +39,23 @@ class AlarmWeekAdapter(private val context: Context,private val list : MutableLi
     }
 
     override fun onBindViewHolder(holder: WeekViewHolder, position: Int) {
+
+        holder.itemView.setOnClickListener {
+//            weekBean.isChecked = weekBean.isChecked
+//            notifyItemChanged(position)
+            onClick?.onItemClick(position)
+        }
+
        val weekBean = list[position]
         Timber.e("------item="+Gson().toJson(weekBean))
 
-        holder.tv.text = weekBean.weekName
-        val bgTv = holder.tv
+        holder.wkNameTv.text = weekBean.weekName
+
         if(weekBean.isChecked){
-            bgTv.shapeDrawableBuilder.setSolidColor(Color.parseColor("#17A89B") ).intoBackground()
-
+            holder.tv.visibility = View.VISIBLE
         }else{
-            bgTv.shapeDrawableBuilder.setSolidColor(Color.parseColor("#00000000")).intoBackground()
-
+            holder.tv.visibility = View.INVISIBLE
         }
 
-
-        holder.itemView.setOnClickListener {
-            weekBean.isChecked = weekBean.isChecked != true
-            notifyDataSetChanged()
-            onClick?.onItemClick(position)
-        }
     }
 }

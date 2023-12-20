@@ -83,7 +83,7 @@ class MenuSettingFragment : TitleBarFragment<SecondHomeActivity>() {
         val mac = MmkvUtils.getConnDeviceMac()
         screenStyleButtonView?.visibility = View.GONE
         clockStyleButtonView?.visibility =  View.GONE
-        settingAlarmLayout?.visibility =  View.GONE
+       // settingAlarmLayout?.visibility =  View.GONE
         secondUploadGifView?.visibility =  View.VISIBLE
 
 

@@ -14,6 +14,7 @@ import com.blala.blalable.blebean.AlarmBean;
 import com.blala.blalable.blebean.CommBleSetBean;
 import com.blala.blalable.blebean.CommTimeBean;
 import com.blala.blalable.keyboard.KeyBoardConstant;
+import com.blala.blalable.keyboard.OnAlarmListListener;
 import com.blala.blalable.listener.BleConnStatusListener;
 import com.blala.blalable.listener.ConnStatusListener;
 import com.blala.blalable.listener.OnBleStatusBackListener;
@@ -660,6 +661,70 @@ public class BleOperateManager {
 
 
 
+    //读取闹钟
+    public void readAlarm(OnAlarmListListener onAlarmListListener){
+        byte[] resultArray = Utils.getFullPackage(new byte[]{0x00,0x25,0x00});
+        bleManager.writeDataToDevice(resultArray, new WriteBackDataListener() {
+            @Override
+            public void backWriteData(byte[] data) {
+                if(data.length>10 && (data[9] & 0xff) == 38){
+                    //总长度，判断有几组闹钟
+                    int alarmCount = Utils.getIntFromBytes(data[11],data[12]);
+                    Log.e(TAG,"--------闹钟长度="+alarmCount);
+                    if(alarmCount == 2){
+                        if(onAlarmListListener != null){
+                            onAlarmListListener.backAlarmList(new ArrayList<AlarmBean>());
+                        }
+                        return;
+                        //没有闹钟了
+                    }
+                    byte[] itemArray = new byte[alarmCount-2];
+                    System.arraycopy(data,15,itemArray,0,itemArray.length);
+
+                    Log.e(TAG,"-------闹钟详细="+Utils.formatBtArrayToString(itemArray));
+
+                    List<byte[]> list = new ArrayList<>();
+
+                    for(int i = 0;i<itemArray.length;i+=5){
+                        Log.e(TAG,"----i="+i);
+                        if(i+4<itemArray.length){
+                            byte[] aArray = new byte[5];
+                            System.arraycopy(itemArray,i,aArray,0,5);
+                            list.add(aArray);
+                        }
+                    }
+
+                    Log.e(TAG,"-------lll="+new Gson().toJson(list));
+
+                    List<AlarmBean> alarmBeanList = new ArrayList<>();
+                    for(byte[] bt : list){
+                        AlarmBean alarmBean = new AlarmBean();
+                        //下标
+                        int index = bt[0] & 0xff;
+                        //开关 0x00: 默认
+                        //0x01: 关闭
+                        //0x02: 打开
+                        int switchCode = bt[1] & 0xff;
+                        //重复
+                        byte repeat = bt[2];
+                        //时
+                        int hour = bt[3];
+                        //分
+                        int minute = bt[4];
+                        alarmBean.setAlarmIndex(index);
+                        alarmBean.setOpen(switchCode==1);
+                        alarmBean.setRepeat(repeat);
+                        alarmBean.setHour(hour);
+                        alarmBean.setMinute(minute);
+                        alarmBeanList.add(alarmBean);
+                    }
+                    if(onAlarmListListener != null){
+                        onAlarmListListener.backAlarmList(alarmBeanList);
+                    }
+                }
+            }
+        });
+    }
 
 
 

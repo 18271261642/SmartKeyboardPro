@@ -28,6 +28,8 @@ class AddAlarmDialog : AppCompatDialog {
     private var adapter : AlarmWeekAdapter ?= null
     private var weekList : MutableList<AlarmWeekBean> ?= null
 
+    private var tempWeekList = mutableListOf<AlarmWeekBean>()
+
     constructor(context: Context) : super (context){
 
     }
@@ -60,17 +62,9 @@ class AddAlarmDialog : AppCompatDialog {
 
         adapter?.setOnItemClick{
             val bean = weekList?.get(it)
-
-//            weekList?.get(it)?.isChecked = !bean!!.isChecked
-//
-            Timber.e("------周="+it+Gson().toJson(weekList))
-            //adapter?.notifyItemChanged(it)
-
-
+            bean?.isChecked = !bean!!.isChecked
+            adapter?.notifyItemChanged(it)
         }
-
-
-
 
 
         editAlarmTitleBar?.setOnTitleBarListener(object : OnTitleBarListener{
@@ -83,7 +77,7 @@ class AddAlarmDialog : AppCompatDialog {
             }
 
             override fun onRightClick(view: View?) {
-
+                dismiss()
             }
 
         })
@@ -110,11 +104,6 @@ class AddAlarmDialog : AppCompatDialog {
         weekList?.clear()
         weekList?.addAll(getWeekList())
         adapter?.notifyDataSetChanged()
-
-
-
-
-
 
 
 

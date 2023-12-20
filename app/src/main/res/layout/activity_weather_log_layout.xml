@@ -20,6 +20,15 @@
         android:text="获取天气"
         android:textColor="@color/white"/>
 
+
+    <Button
+        android:id="@+id/getDialFlashBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="获取设备表盘_FLASH特征编号"
+        android:textColor="@color/white"/>
+
+
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">

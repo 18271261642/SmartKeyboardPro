@@ -15,6 +15,6 @@ class SecondScreenStyleActivity : AppActivity() {
     }
 
     override fun initData() {
-        TODO("Not yet implemented")
+
     }
 }

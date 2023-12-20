@@ -48,6 +48,7 @@ class MenuDataFragment : TitleBarFragment<SecondHomeActivity>() {
             if (msg.what == 0x00) {
                 getDeviceData()
             }
+
         }
     }
 
@@ -99,9 +100,9 @@ class MenuDataFragment : TitleBarFragment<SecondHomeActivity>() {
         }
 
 
-        attachActivity.setOnConnStateListener(object : OnConnStateListener {
+        attachActivity?.setOnConnStateListener(object : OnConnStateListener {
             override fun onConnState(connStatus: ConnStatus?) {
-                handlers.sendEmptyMessageDelayed(0x00, 3000)
+                handlers.sendEmptyMessageDelayed(0x00, 5000)
             }
         })
 
@@ -162,9 +163,9 @@ class MenuDataFragment : TitleBarFragment<SecondHomeActivity>() {
             ) {
                 homeTempView?.setBatteryValue(batteryValue)
                 homeTempView?.setTemperatures(
-                    cpuTemperatureC.toString(),
-                    gpuTemC.toString(),
-                    hardTemC.toString()
+                    (cpuTemperatureC/10).toString(),
+                    (gpuTemC/10).toString(),
+                    (hardTemC/10).toString()
                 )
                 homeTempView?.setFanSpeed(circleSpeed)
             }

@@ -159,15 +159,16 @@ class MenuDeviceFragment : TitleBarFragment<SecondHomeActivity>(){
             showConnState()
         }
 
-        attachActivity.setOnConnStateListener(object : OnConnStateListener{
+        attachActivity?.setOnConnStateListener(object : OnConnStateListener{
             override fun onConnState(connStatus: ConnStatus?) {
                 secondMenuDeviceConnStateTv?.text =  if(connStatus == ConnStatus.CONNECTED) resources.getString(R.string.string_connected) else (if( connStatus == ConnStatus.CONNECTING) resources.getString(R.string.string_connecting) else resources.getString(R.string.string_retry_conn))
                 if(connStatus == ConnStatus.CONNECTED){
                     getBattery()
-                    showConnState()
+
                 }else{
                     menuBatteryTv?.text = String.format(resources.getString(R.string.string_battery),"--")
                 }
+                showConnState()
             }
         })
 
