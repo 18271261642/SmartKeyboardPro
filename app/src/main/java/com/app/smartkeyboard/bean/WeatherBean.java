@@ -39,11 +39,11 @@ public class WeatherBean {
     @JsonProperty("uvIndex")
     private String uvIndex;
     @JsonProperty("tomorrow")
-    private TomorrowDTO tomorrow;
+    private FutureWeatherBean tomorrow;
     @JsonProperty("dayAfterTomorrow")
-    private DayAfterTomorrowDTO dayAfterTomorrow;
+    private FutureWeatherBean dayAfterTomorrow;
     @JsonProperty("threeDaysFromNow")
-    private ThreeDaysFromNowDTO threeDaysFromNow;
+    private FutureWeatherBean threeDaysFromNow;
     @JsonProperty("dateTimeStamp")
     private long dateTimeStamp;
     @JsonProperty("windKph")
@@ -54,6 +54,8 @@ public class WeatherBean {
     private String city;
     @JsonProperty("district")
     private String district;
+
+    private String address;
     @JsonProperty("hourly")
     private List<HourlyDTO> hourly;
 
@@ -67,6 +69,14 @@ public class WeatherBean {
 
     public String getTempMax() {
         return tempMax;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public void setTempMax(String tempMax) {
@@ -161,27 +171,27 @@ public class WeatherBean {
         this.uvIndex = uvIndex;
     }
 
-    public TomorrowDTO getTomorrow() {
+    public FutureWeatherBean getTomorrow() {
         return tomorrow;
     }
 
-    public void setTomorrow(TomorrowDTO tomorrow) {
+    public void setTomorrow(FutureWeatherBean tomorrow) {
         this.tomorrow = tomorrow;
     }
 
-    public DayAfterTomorrowDTO getDayAfterTomorrow() {
+    public FutureWeatherBean getDayAfterTomorrow() {
         return dayAfterTomorrow;
     }
 
-    public void setDayAfterTomorrow(DayAfterTomorrowDTO dayAfterTomorrow) {
+    public void setDayAfterTomorrow(FutureWeatherBean dayAfterTomorrow) {
         this.dayAfterTomorrow = dayAfterTomorrow;
     }
 
-    public ThreeDaysFromNowDTO getThreeDaysFromNow() {
+    public FutureWeatherBean getThreeDaysFromNow() {
         return threeDaysFromNow;
     }
 
-    public void setThreeDaysFromNow(ThreeDaysFromNowDTO threeDaysFromNow) {
+    public void setThreeDaysFromNow(FutureWeatherBean threeDaysFromNow) {
         this.threeDaysFromNow = threeDaysFromNow;
     }
 
@@ -656,6 +666,131 @@ public class WeatherBean {
 
         public void setStatus(String status) {
             this.status = status;
+        }
+    }
+
+
+
+    public static class FutureWeatherBean{
+        @JsonProperty("tempMax")
+        private String tempMax;
+        @JsonProperty("sunrise")
+        private String sunrise;
+        @JsonProperty("sunset")
+        private String sunset;
+        @JsonProperty("humidity")
+        private String humidity;
+        @JsonProperty("dateTimeStamp")
+        private Long dateTimeStamp;
+        @JsonProperty("uvIndex")
+        private String uvIndex;
+        @JsonProperty("airAqi")
+        private String airAqi;
+        @JsonProperty("airLevel")
+        private String airLevel;
+        @JsonProperty("tempMin")
+        private String tempMin;
+        @JsonProperty("airStatus")
+        private String airStatus;
+        @JsonProperty("status")
+        private String status;
+        @JsonProperty("statusCode")
+        private Integer statusCode;
+
+        public String getTempMax() {
+            return tempMax;
+        }
+
+        public void setTempMax(String tempMax) {
+            this.tempMax = tempMax;
+        }
+
+        public String getSunrise() {
+            return sunrise;
+        }
+
+        public void setSunrise(String sunrise) {
+            this.sunrise = sunrise;
+        }
+
+        public String getSunset() {
+            return sunset;
+        }
+
+        public void setSunset(String sunset) {
+            this.sunset = sunset;
+        }
+
+        public String getHumidity() {
+            return humidity;
+        }
+
+        public void setHumidity(String humidity) {
+            this.humidity = humidity;
+        }
+
+        public Long getDateTimeStamp() {
+            return dateTimeStamp;
+        }
+
+        public void setDateTimeStamp(Long dateTimeStamp) {
+            this.dateTimeStamp = dateTimeStamp;
+        }
+
+        public String getUvIndex() {
+            return uvIndex;
+        }
+
+        public void setUvIndex(String uvIndex) {
+            this.uvIndex = uvIndex;
+        }
+
+        public String getAirAqi() {
+            return airAqi;
+        }
+
+        public void setAirAqi(String airAqi) {
+            this.airAqi = airAqi;
+        }
+
+        public String getAirLevel() {
+            return airLevel;
+        }
+
+        public void setAirLevel(String airLevel) {
+            this.airLevel = airLevel;
+        }
+
+        public String getTempMin() {
+            return tempMin;
+        }
+
+        public void setTempMin(String tempMin) {
+            this.tempMin = tempMin;
+        }
+
+        public String getAirStatus() {
+            return airStatus;
+        }
+
+        public void setAirStatus(String airStatus) {
+            this.airStatus = airStatus;
+        }
+
+        public String getStatus() {
+            return status;
+        }
+
+        public void setStatus(String status) {
+            this.status = status;
+        }
+
+        public Integer getStatusCode() {
+            return statusCode;
+        }
+
+        public void setStatusCode(Integer statusCode) {
+            this.statusCode = statusCode;
         }
     }
 }

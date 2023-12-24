@@ -1,6 +1,12 @@
 <resources>
     <string name="app_name">掌上悟确</string>
 
+
+    <string name="string_screen_monitor">监控模式</string>
+    <string name="string_screen_writing">打字模式</string>
+    <string name="string_screen_overview">总览图模式</string>
+    <string name="string_screen_default">默认模式</string>
+    <string name="string_delete_alarm_desc">是否删除该闹钟?</string>
     <string name="string_unit_minute">分</string>
 
     <string name="string_not_conn">未连接</string>

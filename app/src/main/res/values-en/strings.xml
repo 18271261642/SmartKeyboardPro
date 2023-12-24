@@ -2,6 +2,11 @@
     <string name="app_name">Pocket Wuque</string>
 
 
+    <string name="string_screen_monitor">监控模式</string>
+    <string name="string_screen_writing">打字模式</string>
+    <string name="string_screen_overview">总览图模式</string>
+    <string name="string_screen_default">默认模式</string>
+    <string name="string_delete_alarm_desc">Do you want to delete the alarm clock?</string>
     <string name="string_unit_minute">min</string>
 
     <string name="string_not_conn">Not connected</string>

@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.hjq.shape.layout.ShapeConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:padding="@dimen/dp_10"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:shape_solidColor="@color/second_theme_color"
+    app:shape_solidPressedColor="@color/second_theme_press_color"
     android:layout_height="wrap_content">
 
 
@@ -39,4 +41,4 @@
         app:layout_constraintBottom_toBottomOf="parent"/>
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</com.hjq.shape.layout.ShapeConstraintLayout>

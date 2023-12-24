@@ -127,6 +127,21 @@ public class BikeUtils {
     }
 
 
+    /**
+     * 将分钟转换为小时
+     * @param hour
+     * @param context
+     * @return
+     */
+    public static String formatMinuteToHour(int minute){
+       if(minute == 0){
+           return "0H";
+       }
+      int hour = minute / 60;
+       int m = minute % 60;
+       return hour+"H"+m+"M";
+    }
+
 
     public static String getDayOfStatus(int hour,Context context){
         if (hour >= 0 && hour <= 6) {

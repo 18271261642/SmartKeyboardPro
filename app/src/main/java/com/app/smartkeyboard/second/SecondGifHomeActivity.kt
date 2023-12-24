@@ -86,6 +86,8 @@ class SecondGifHomeActivity : AppActivity() {
     private var dialBean = DialCustomBean()
 
 
+    private var isSecondDevice = false
+
     private val handlers: Handler = object : Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message) {
             super.handleMessage(msg)
@@ -143,7 +145,7 @@ class SecondGifHomeActivity : AppActivity() {
 //        circularBitmapDrawable.isCircular = true
 //        secondDefaultAnimationImgView?.setImageDrawable(circularBitmapDrawable)
         Glide.with(context).load(R.drawable.gif_preview)
-            .transform(MultiTransformation(CenterCrop(), CircleCrop())).skipMemoryCache(false)
+            .transform(MultiTransformation(CenterCrop(), CircleCrop()))
             .diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.drawable.gif_preview)
             .into(secondDefaultAnimationImgView!!)
 
@@ -151,6 +153,7 @@ class SecondGifHomeActivity : AppActivity() {
     }
 
     override fun initData() {
+        isSecondDevice= BaseApplication.getBaseApplication().deviceTypeConst==DeviceTypeConst.DEVICE_SECOND
         cropImgPath = this.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath
 
         //判断SD卡中是否有选择过的图片
@@ -159,7 +162,8 @@ class SecondGifHomeActivity : AppActivity() {
         val array = saveCropFile.listFiles()
         if (array != null && array.size > 0) {
             val firstFilePath = array.get(0).path
-            Glide.with(this).load(firstFilePath).into(secondCusGifImageView!!)
+            Glide.with(this).load(firstFilePath)
+                .transform(MultiTransformation(CenterCrop(), CircleCrop())).skipMemoryCache(false).into(secondCusGifImageView!!)
         }
     }
 
@@ -426,7 +430,7 @@ class SecondGifHomeActivity : AppActivity() {
         if (localUrl.contains(".gif")) {
             // dealWidthGif(localUrl)
 
-            val gifList = ImageUtils.getGifDataBitmap(File(localUrl))
+            val gifList = ImageUtils.getGifDataBitmap(File(localUrl),isSecondDevice)
             if (gifList.size < 1) {
                 ToastUtils.show(resources.getString(R.string.string_gig_small))
                 return
@@ -491,13 +495,17 @@ class SecondGifHomeActivity : AppActivity() {
                 val y: Int = if(isFirst) (b.height / 2 - 81) else 0
 
 
-
                 if(x<0 || y <0)
                     return
 
                 val resultBitmap = Bitmap.createBitmap(b, x, y, if(isFirst)320 else 390, if(isFirst) 172 else 390)
 
-                Glide.with(this).load(resultBitmap).into(secondCusGifImageView!!)
+                if(isSecondDevice){
+                    Glide.with(this).load(resultBitmap).transform(MultiTransformation(CenterCrop(), CircleCrop())).into(secondCusGifImageView!!)
+                }else{
+                    Glide.with(this).load(resultBitmap).into(secondCusGifImageView!!)
+                }
+
                 ImageUtils.saveMyBitmap(resultBitmap, saveCropPath)
 
                 Timber.e("-------裁剪后的图片=" + (File(saveCropPath)).path)
@@ -516,7 +524,12 @@ class SecondGifHomeActivity : AppActivity() {
 
             Timber.e("------url=" + url)
             if (url != null) {
-                Glide.with(this).load(url).into(secondCusGifImageView!!)
+                if(isSecondDevice){
+                    Glide.with(this).load(url).transform(MultiTransformation(CenterCrop(), CircleCrop())).into(secondCusGifImageView!!)
+                }else{
+                    Glide.with(this).load(url).into(secondCusGifImageView!!)
+                }
+
                 dealWidthGif(url)
             }
 
@@ -535,7 +548,7 @@ class SecondGifHomeActivity : AppActivity() {
             ToastUtils.show(resources.getString(R.string.string_device_not_connect))
             return
         }
-        val gifList = ImageUtils.getGifDataBitmap(File(gifPath))
+        val gifList = ImageUtils.getGifDataBitmap(File(gifPath),isSecondDevice)
         Timber.e("-------gifList=" + gifList.size)
         if (gifList.size == 0) {
             ToastUtils.show(resources.getString(R.string.string_gig_small))
@@ -573,7 +586,10 @@ class SecondGifHomeActivity : AppActivity() {
             val resultCArray = Utils.hexStringToByte(cByteStr.toString())
             //得到B的数组
             val gifSpeed = MmkvUtils.getGifSpeed()
-            val resultBArray = KeyBoardConstant.dealWidthBData(gifList.size, gifSpeed)
+
+            val isSecond = BaseApplication.getBaseApplication().deviceTypeConst==DeviceTypeConst.DEVICE_SECOND
+
+            val resultBArray = KeyBoardConstant.dealWidthBData(gifList.size, gifSpeed,isSecond)
 
             val resultAllArray = KeyBoardConstant.getGifAArrayData(
                 gifList.size,

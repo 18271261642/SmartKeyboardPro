@@ -22,4 +22,5 @@
 
     <!--二代主题颜色-->
     <color name="second_theme_color">#191C24</color>
+    <color name="second_theme_press_color">#80191C24</color>
 </resources>

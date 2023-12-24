@@ -592,7 +592,7 @@ class CustomDialActivity : AppActivity() {
         if (localUrl.contains(".gif")) {
             // dealWidthGif(localUrl)
 
-            val gifList = ImageUtils.getGifDataBitmap(File(localUrl))
+            val gifList = ImageUtils.getGifDataBitmap(File(localUrl),false)
             if (gifList.size < 1) {
                 ToastUtils.show(resources.getString(R.string.string_gig_small))
                 return
@@ -939,7 +939,7 @@ class CustomDialActivity : AppActivity() {
             ToastUtils.show(resources.getString(R.string.string_device_not_connect))
             return
         }
-        val gifList = ImageUtils.getGifDataBitmap(File(gifPath))
+        val gifList = ImageUtils.getGifDataBitmap(File(gifPath),false)
         Timber.e("-------gifList=" + gifList.size)
         if (gifList.size == 0) {
             ToastUtils.show(resources.getString(R.string.string_gig_small))
@@ -977,7 +977,7 @@ class CustomDialActivity : AppActivity() {
             val resultCArray = Utils.hexStringToByte(cByteStr.toString())
             //得到B的数组
             val gifSpeed = MmkvUtils.getGifSpeed()
-            val resultBArray = KeyBoardConstant.dealWidthBData(gifList.size, gifSpeed)
+            val resultBArray = KeyBoardConstant.dealWidthBData(gifList.size, gifSpeed,false)
 
             val resultAllArray = KeyBoardConstant.getGifAArrayData(
                 gifList.size,

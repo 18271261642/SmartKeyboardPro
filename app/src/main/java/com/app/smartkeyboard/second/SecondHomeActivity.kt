@@ -42,6 +42,7 @@ import com.bonlala.base.FragmentPagerAdapter
 import com.hjq.permissions.XXPermissions
 import com.hjq.shape.layout.ShapeLinearLayout
 import com.hjq.toast.ToastUtils
+import okhttp3.internal.toHexString
 import timber.log.Timber
 
 /**
@@ -127,10 +128,11 @@ class SecondHomeActivity : AppActivity() {
         intentFilter.addAction(BleConstant.BLE_DIS_CONNECT_ACTION)
         intentFilter.addAction(BleConstant.BLE_SCAN_COMPLETE_ACTION)
         intentFilter.addAction(BleConstant.BLE_START_SCAN_ACTION)
-       // registerReceiver(broadcastReceiver,intentFilter)
+        intentFilter.addAction("weather_action")
+        registerReceiver(broadcastReceiver,intentFilter)
 
-        val localBroadcastManager : LocalBroadcastManager = LocalBroadcastManager.getInstance(this)
-        localBroadcastManager.registerReceiver(broadcastReceiver,intentFilter)
+//        val localBroadcastManager : LocalBroadcastManager = LocalBroadcastManager.getInstance(this)
+//        localBroadcastManager.registerReceiver(broadcastReceiver,intentFilter)
 
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 //            registerReceiver(broadcastReceiver, intentFilter, RECEIVER_NOT_EXPORTED)
@@ -138,6 +140,9 @@ class SecondHomeActivity : AppActivity() {
 //            registerReceiver(broadcastReceiver, intentFilter)
 //        }
         retryConn()
+
+        val h = 23
+        Timber.e("---------3333-----="+(h.toHexString()))
     }
 
 
@@ -395,6 +400,10 @@ class SecondHomeActivity : AppActivity() {
                 ToastUtils.show(resources.getString(R.string.string_conn_disconn))
                 onConnStatusListener?.onConnState(ConnStatus.NOT_CONNECTED)
               //  showVersion()
+            }
+
+            if(action == "weather_action"){
+                getWeather()
             }
         }
 

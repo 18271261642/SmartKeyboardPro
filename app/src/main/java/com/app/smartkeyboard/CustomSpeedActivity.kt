@@ -172,7 +172,7 @@ class CustomSpeedActivity : AppActivity() {
 
     //生成gif
     private fun createGif(url : String){
-        val gifList = ImageUtils.getGifDataBitmap(File(url))
+        val gifList = ImageUtils.getGifDataBitmap(File(url),false)
         val duration = ImageUtils.getGifAnimationDuration(File(url))
         val speed = MmkvUtils.getGifSpeed()
         val realSpeed = 11-speed
@@ -199,7 +199,7 @@ class CustomSpeedActivity : AppActivity() {
 
     private fun changeGifSpeed(speed : Int){
         Timber.e("------速度+"+speed)
-        val pickList = ImageUtils.getGifDataBitmap(File(dialFileUrl))
+        val pickList = ImageUtils.getGifDataBitmap(File(dialFileUrl),false)
         val markGif = GifMaker(1)
         val realSpeed = 11-speed
         markGif.setOnGifListener { current, total ->

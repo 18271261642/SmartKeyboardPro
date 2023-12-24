@@ -326,9 +326,18 @@ public class ConnStatusService extends Service {
                             BleOperateManager.getInstance().deleteIndexNote(t);
                         }
                     }
+
+
                 }
             }
         });
+
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                sendActionBroad("weather_action","1");
+            }
+        },2000);
     }
 
 
@@ -369,6 +378,7 @@ public class ConnStatusService extends Service {
                     @Override
                     public void run() {
                         //getKeyBoardStatus(bleMac,code);
+                        BaseApplication.getBaseApplication().setConnStatus(ConnStatus.CONNECTED);
                         setDeviceInfo(bleMac);
                     }
                 },1000);

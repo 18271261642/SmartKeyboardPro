@@ -77,6 +77,8 @@ public class LocationUtils {
                 }
 
                 Timber.e("---------city=" + cityArea + " " + cityStr + " " + province);
+                stopLocation();
+                return;
             } catch (IOException e) {
                 e.printStackTrace();
             }

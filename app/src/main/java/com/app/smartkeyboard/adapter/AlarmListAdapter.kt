@@ -3,18 +3,38 @@ package com.app.smartkeyboard.adapter
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.OnLongClickListener
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Recycler
 import com.app.smartkeyboard.R
+import com.app.smartkeyboard.listeners.OnCommLongClickListener
 import com.blala.blalable.Utils
 import com.blala.blalable.blebean.AlarmBean
 import timber.log.Timber
 
 class AlarmListAdapter(val context : Context,val list : MutableList<AlarmBean>) : RecyclerView.Adapter<AlarmListAdapter.AlarmListViewHolder>(){
 
+
+    private var click : OnCommItemClickListener ?= null
+
+    private var itemCheckL : OnItemCheckListener ?= null
+
+    private var onLongClick : OnCommLongClickListener?= null
+
+    fun onLongListener(l : OnCommLongClickListener){
+        this.onLongClick = l
+    }
+
+    fun setOnItemCheckListener(i : OnItemCheckListener){
+        this.itemCheckL = i
+    }
+    fun setOnItemListener(c : OnCommItemClickListener){
+        this.click = c
+
+    }
 
     class AlarmListViewHolder(val view : View) : RecyclerView.ViewHolder(view){
          val timeTv = view.findViewById<TextView>(R.id.itemAlarmListTimeTv)
@@ -32,6 +52,28 @@ class AlarmListAdapter(val context : Context,val list : MutableList<AlarmBean>) 
     }
 
     override fun onBindViewHolder(holder: AlarmListViewHolder, position: Int) {
+
+        holder.itemView.setOnClickListener {
+            click?.onItemClick(holder.layoutPosition)
+        }
+
+        holder.checkBox.setOnCheckedChangeListener { buttonView, isChecked ->
+            if(buttonView.isPressed){
+                itemCheckL?.onItemCheck(holder.layoutPosition,isChecked)
+            }
+        }
+
+
+        holder.itemView.setOnLongClickListener(object : OnLongClickListener{
+            override fun onLongClick(v: View?): Boolean {
+               onLongClick?.onLongClickItem(holder.layoutPosition)
+                return true
+            }
+
+        })
+
+
+
         val bean = list[position]
         val repeat = bean.repeat
 
@@ -77,5 +119,10 @@ class AlarmListAdapter(val context : Context,val list : MutableList<AlarmBean>) 
             sb.append(context.resources.getString(R.string.string_saturday))
         }
         return sb.toString()
+    }
+
+
+    interface OnItemCheckListener{
+        fun onItemCheck(index : Int,isCheck : Boolean)
     }
 }

@@ -51,7 +51,7 @@ public class ImageUtils {
     }
 
 
-    public static List<Bitmap> getGifDataBitmap(File gifFile) {
+    public static List<Bitmap> getGifDataBitmap(File gifFile,boolean isSecond) {
         List<Bitmap> lt = new ArrayList<>();
         try {
             GifDrawable gifDrawable = new GifDrawable(gifFile);
@@ -64,25 +64,38 @@ public class ImageUtils {
                 int width = bt.getWidth();
                 int height = bt.getHeight();
 
-                //Timber.e("---111-----尺寸=" + width + " height=" + height);
+                Timber.e("---111-----尺寸=" + width + " height=" + height);
                 if (width < 320 || height < 172) {
                     lt.clear();
                     break;
                 }
 
+                if(isSecond){
+                    if (width == 390 && height == 390) {
+                        lt.add(bt);
+                    } else {
+                        //计算偏移量
+                        int x = width / 2 - 195;
+                        int y = height / 2 - 195;
 
-                if (width == 320 && height == 172) {
-                    lt.add(bt);
-                } else {
-                    //计算偏移量
-                    int x = width / 2 - 160;
-                    int y = height / 2 - 81;
+                        Bitmap newBitmap = Bitmap.createBitmap(bt, x, y, 390, 390);
 
+                        Timber.e("---222-----尺寸=" + newBitmap.getWidth() + " height=" + newBitmap.getHeight());
+                        lt.add(newBitmap);
+                    }
+                }else{
+                    if (width == 320 && height == 172) {
+                        lt.add(bt);
+                    } else {
+                        //计算偏移量
+                        int x = width / 2 - 160;
+                        int y = height / 2 - 86;
 
-                    Bitmap newBitmap = Bitmap.createBitmap(bt, x, y, 320, 172);
+                        Bitmap newBitmap = Bitmap.createBitmap(bt, x, y, 320, 172);
 
-                    //Timber.e("---222-----尺寸=" + newBitmap.getWidth() + " height=" + newBitmap.getHeight());
-                    lt.add(newBitmap);
+                        //Timber.e("---222-----尺寸=" + newBitmap.getWidth() + " height=" + newBitmap.getHeight());
+                        lt.add(newBitmap);
+                    }
                 }
 
             }

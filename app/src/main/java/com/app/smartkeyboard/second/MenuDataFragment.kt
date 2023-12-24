@@ -23,6 +23,10 @@ import com.app.smartkeyboard.utils.TimeUtils
 import com.app.smartkeyboard.widget.CusHistogramChartView
 import com.app.smartkeyboard.widget.SecondHomeTemperatureView
 import com.blala.blalable.listener.OnSystemDataListener
+import com.blala.blalable.listener.OnUseTimeListener
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
  * 数据页面
@@ -65,7 +69,7 @@ class MenuDataFragment : TitleBarFragment<SecondHomeActivity>() {
         findViewById<LinearLayout>(R.id.changeDeviceLayout).setOnLongClickListener(object :
             OnLongClickListener {
             override fun onLongClick(v: View?): Boolean {
-
+               // getUserTime()
 //                val h = attachActivity as SecondHomeActivity
 //                h?.getWeather()
 
@@ -113,15 +117,15 @@ class MenuDataFragment : TitleBarFragment<SecondHomeActivity>() {
 
         //homeTempView?.setDefaultValue()
 
-        val list = mutableListOf<UseTimeBean>()
-        list.add(UseTimeBean(12, 10))
-        list.add(UseTimeBean(13, 10))
-        list.add(UseTimeBean(14, 10))
-        list.add(UseTimeBean(15, 10))
-        list.add(UseTimeBean(16, 10))
-        list.add(UseTimeBean(17, 10))
-        list.add(UseTimeBean(18, 10))
-        homeDataChartView?.setDataSource(list)
+//        val list = mutableListOf<UseTimeBean>()
+//        list.add(UseTimeBean(12, 10))
+//        list.add(UseTimeBean(13, 10))
+//        list.add(UseTimeBean(14, 10))
+//        list.add(UseTimeBean(15, 10))
+//        list.add(UseTimeBean(16, 10))
+//        list.add(UseTimeBean(17, 10))
+//        list.add(UseTimeBean(18, 10))
+//        homeDataChartView?.setDataSource(list)
     }
 
 
@@ -129,7 +133,7 @@ class MenuDataFragment : TitleBarFragment<SecondHomeActivity>() {
         super.onActivityResume()
         homeTimeStateTv?.text =
             TimeUtils.getTimeByNow(attachActivity) + " " + MmkvUtils.getConnDeviceName()
-        getDeviceData()
+        //getDeviceData()
     }
 
     override fun onFragmentResume(first: Boolean) {
@@ -137,16 +141,22 @@ class MenuDataFragment : TitleBarFragment<SecondHomeActivity>() {
         homeTimeStateTv?.text =
             TimeUtils.getTimeByNow(attachActivity) + " " + MmkvUtils.getConnDeviceName()
         //homeTempView?.setBatteryValue(88)
-        getDeviceData()
+
     }
 
 
+    override fun onResume() {
+        super.onResume()
+      //  getUserTime()
+        getDeviceData()
+    }
+
     private fun getDeviceData() {
         val isConnStatus = BaseApplication.getBaseApplication().connStatus
-        if (isConnStatus != ConnStatus.CONNECTED) {
-            homeTempView?.setDefaultValue()
-            return
-        }
+//        if (isConnStatus != ConnStatus.CONNECTED) {
+//            homeTempView?.setDefaultValue()
+//            return
+//        }
 
 
         BaseApplication.getBaseApplication().bleOperate.getDeviceSystemData(object :
@@ -170,7 +180,14 @@ class MenuDataFragment : TitleBarFragment<SecondHomeActivity>() {
                 homeTempView?.setFanSpeed(circleSpeed)
             }
 
+
         })
+
+        GlobalScope.launch {
+            delay(2000)
+            getUserTime()
+        }
+
     }
 
     //提示请连接的dialog
@@ -195,5 +212,19 @@ class MenuDataFragment : TitleBarFragment<SecondHomeActivity>() {
         windowLayout?.width = widthW
         windowLayout?.gravity = Gravity.BOTTOM
         window?.attributes = windowLayout
+    }
+
+
+    private fun getUserTime(){
+        BaseApplication.getBaseApplication().bleOperate.getDeviceUseTime(object : OnUseTimeListener{
+            override fun backUseTimeData(list: MutableList<com.blala.blalable.blebean.UseTimeBean>?) {
+                if (list != null) {
+                    homeDataChartView?.setDataSource(list)
+                }else{
+
+                }
+            }
+
+        })
     }
 }

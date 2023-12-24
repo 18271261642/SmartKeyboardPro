@@ -13,6 +13,7 @@ import com.blala.blalable.bean.WeatherBean;
 import com.blala.blalable.blebean.AlarmBean;
 import com.blala.blalable.blebean.CommBleSetBean;
 import com.blala.blalable.blebean.CommTimeBean;
+import com.blala.blalable.blebean.UseTimeBean;
 import com.blala.blalable.keyboard.KeyBoardConstant;
 import com.blala.blalable.keyboard.OnAlarmListListener;
 import com.blala.blalable.listener.BleConnStatusListener;
@@ -26,6 +27,7 @@ import com.blala.blalable.listener.OnMeasureDataListener;
 import com.blala.blalable.listener.OnRealTimeDataListener;
 import com.blala.blalable.listener.OnSendWriteDataListener;
 import com.blala.blalable.listener.OnSystemDataListener;
+import com.blala.blalable.listener.OnUseTimeListener;
 import com.blala.blalable.listener.OnWatchFaceVerifyListener;
 import com.blala.blalable.listener.OnWriteProgressListener;
 import com.blala.blalable.listener.WriteBack24HourDataListener;
@@ -660,6 +662,15 @@ public class BleOperateManager {
     }
 
 
+    //设置闹钟
+    public void setAlarmData(byte[] bt){
+        bleManager.writeDataToDevice(bt, new WriteBackDataListener() {
+            @Override
+            public void backWriteData(byte[] data) {
+
+            }
+        });
+    }
 
     //读取闹钟
     public void readAlarm(OnAlarmListListener onAlarmListListener){
@@ -708,11 +719,11 @@ public class BleOperateManager {
                         //重复
                         byte repeat = bt[2];
                         //时
-                        int hour = bt[3];
+                        int hour = bt[3] & 0xff;
                         //分
-                        int minute = bt[4];
+                        int minute = bt[4] & 0xff;
                         alarmBean.setAlarmIndex(index);
-                        alarmBean.setOpen(switchCode==1);
+                        alarmBean.setOpen(switchCode==2);
                         alarmBean.setRepeat(repeat);
                         alarmBean.setHour(hour);
                         alarmBean.setMinute(minute);
@@ -744,6 +755,77 @@ public class BleOperateManager {
 
     public void writeWeatherData(byte[] array){
         bleManager.writeDataToDevice(array, new WriteBackDataListener() {
+            @Override
+            public void backWriteData(byte[] data) {
+
+            }
+        });
+    }
+
+
+    //获取使用的时长
+    public  void getDeviceUseTime(OnUseTimeListener onUseTimeListener){
+        byte[] b = Utils.getFullPackage(new byte[]{0x00,0x23,0x00});
+        bleManager.writeDataToDevice(b, new WriteBackDataListener() {
+            @Override
+            public void backWriteData(byte[] data) {
+            //88000000000019780024 01 0014 05 06 2d169da3 0050 2d17ef23 005a 2d1940a3 0064
+                if((data[9] & 0xff) == 36 && data.length>11){
+                    //长度
+                    int length = Utils.getIntFromBytes(data[11],data[12]);
+                    if(length == 2){
+                        if(onUseTimeListener != null){
+                            onUseTimeListener.backUseTimeData(new ArrayList<>());
+                        }
+                        return;
+                    }
+
+                    byte[] contentArray = new byte[length-2];
+                    System.arraycopy(data,15,contentArray,0,length-2);
+
+                    List<byte[]> list = new ArrayList<>();
+
+                    for(int i = 0;i<contentArray.length;i+=6){
+                        Log.e(TAG,"----i="+i);
+                        if(i+5<contentArray.length){
+                            byte[] aArray = new byte[6];
+                            System.arraycopy(contentArray,i,aArray,0,6);
+                            list.add(aArray);
+                        }
+                    }
+
+                    long t = 946724611;
+
+                    List<UseTimeBean> useTimeBeanList = new ArrayList<>();
+
+                    Log.e(TAG,"-------使用="+new Gson().toJson(list));
+                    for(int i = 0;i<list.size();i++){
+                        byte[] item = list.get(i);
+                        long time  =Utils.getIntFromBytesLong(item[0],item[1],item[2],item[3]);
+                        int useTime = Utils.getIntFromBytes(item[4],item[5]);
+                        long timeA = time+t;
+                        Log.e(TAG,"-------时间格式="+timeA+" "+time);
+                        String day = Utils.getFormatDateStr(timeA*1000,"yyyy-MM-dd");
+                        UseTimeBean useTimeBean = new UseTimeBean();
+                        useTimeBean.setDayStr(day);
+                        useTimeBean.setTime(useTime);
+                        useTimeBean.setDay(Utils.getDayStrForDay(day));
+                        useTimeBeanList.add(useTimeBean);
+                    }
+                    if(onUseTimeListener != null){
+                        onUseTimeListener.backUseTimeData(useTimeBeanList);
+                    }
+                }
+            }
+        });
+    }
+
+
+    //设置时钟或屏保样式
+    public void setScreenStyleOrClockStyle(boolean isScreen,int index){
+        byte[] array = new byte[]{0x04,0x0D,(byte) (isScreen? index+1 : 0x00), (byte) (isScreen ? 0x00 : index+1)};
+        byte[] result = Utils.getFullPackage(array);
+        bleManager.writeDataToDevice(result, new WriteBackDataListener() {
             @Override
             public void backWriteData(byte[] data) {
 

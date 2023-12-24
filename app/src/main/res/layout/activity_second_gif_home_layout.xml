@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:orientation="vertical"
+    android:keepScreenOn="true"
     android:background="@color/second_theme_color"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_height="match_parent">
@@ -39,6 +40,7 @@
                 android:layout_gravity="center"
                 android:layout_width="@dimen/dp_130"
                 android:layout_height="@dimen/dp_130"
+
                 android:src="@mipmap/ic_second_add_gif"/>
 
 
@@ -65,6 +67,7 @@
                 android:layout_gravity="center"
                 android:layout_width="@dimen/dp_130"
                 android:layout_height="@dimen/dp_130"
+                android:scaleType="centerInside"
                 android:src="@mipmap/ic_second_add_gif"/>
 
 

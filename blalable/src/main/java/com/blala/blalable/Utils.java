@@ -184,6 +184,10 @@ public class Utils {
         return (high_h & 0xff) << 24 | (high_l & 0xff) << 16 | (low_h & 0xff) << 8 | low_l & 0xff;
     }
 
+    public static   long getIntFromBytesLong(byte high_h, byte high_l, byte low_h, byte low_l) {
+        return (long) (high_h & 0xff) << 24 | (high_l & 0xff) << 16 | (low_h & 0xff) << 8 | low_l & 0xff;
+    }
+
     public static   int getIntFromBytes( byte low_h, byte low_l) {
         return (low_h & 0xff) << 8 | low_l & 0xff;
     }
@@ -247,6 +251,14 @@ public class Utils {
         byte[] bytes = new byte[2];
         bytes[0] = (byte) (value& 0xff);
         bytes[1] = (byte) (value >> 8);
+        return bytes;
+
+    }
+
+    public static byte[] intToSecondByteArray2(int value){
+        byte[] bytes = new byte[2];
+        bytes[1] = (byte) (value& 0xff);
+        bytes[0] = (byte) (value >> 8);
         return bytes;
 
     }
@@ -661,6 +673,10 @@ public class Utils {
         return sdf.format(new Date(time));
     }
 
+    public static int getDayStrForDay(String dayStr){
+        String[] array = dayStr.split("-");
+        return Integer.parseInt(array[2]);
+    }
 
     private static StringBuffer stringBuffer = new StringBuffer();
     public static String changeStr(String str){

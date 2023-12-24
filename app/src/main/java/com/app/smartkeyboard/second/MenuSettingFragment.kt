@@ -59,8 +59,8 @@ class MenuSettingFragment : TitleBarFragment<SecondHomeActivity>() {
 
     override fun initData() {
 
-        screenStyleButtonView?.setIsNormal(false)
-        clockStyleButtonView?.setIsNormal(false)
+        screenStyleButtonView?.setIsNormal(true)
+        clockStyleButtonView?.setIsNormal(true)
     }
 
 
@@ -81,8 +81,8 @@ class MenuSettingFragment : TitleBarFragment<SecondHomeActivity>() {
 
 
         val mac = MmkvUtils.getConnDeviceMac()
-        screenStyleButtonView?.visibility = View.GONE
-        clockStyleButtonView?.visibility =  View.GONE
+       // screenStyleButtonView?.visibility = View.GONE
+       // clockStyleButtonView?.visibility =  View.GONE
        // settingAlarmLayout?.visibility =  View.GONE
         secondUploadGifView?.visibility =  View.VISIBLE
 
@@ -120,12 +120,14 @@ class MenuSettingFragment : TitleBarFragment<SecondHomeActivity>() {
                     showConnDialog()
                     return
                 }
+                startActivity(ClockStyleActivity::class.java)
             }
             R.id.screenStyleButtonView->{   //屏保样式
                 if(BikeUtils.isEmpty(getMac())){
                     showConnDialog()
                     return
                 }
+                startActivity(SecondScreenStyleActivity::class.java)
             }
         }
     }

@@ -10,8 +10,10 @@ import android.os.Message
 import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
+import com.app.smartkeyboard.BaseApplication
 import com.app.smartkeyboard.R
 import com.app.smartkeyboard.action.AppActivity
+import com.app.smartkeyboard.ble.DeviceTypeConst
 import com.app.smartkeyboard.gif.GifMaker
 import com.app.smartkeyboard.utils.ImageUtils
 import com.app.smartkeyboard.utils.MmkvUtils
@@ -43,6 +45,8 @@ class SecondGifSpeedActivity : AppActivity() {
 
     var gifMaker: GifMaker? = null
 
+
+    private var isSecondDevice = false
 
     private val handlers: Handler = object : Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message) {
@@ -130,6 +134,7 @@ class SecondGifSpeedActivity : AppActivity() {
     }
 
     override fun initData() {
+        isSecondDevice= BaseApplication.getBaseApplication().deviceTypeConst== DeviceTypeConst.DEVICE_SECOND
         gifPath = getExternalFilesDir(Environment.DIRECTORY_DCIM)?.path
         val speed = MmkvUtils.getGifSpeed()
         secondSpeedSeekBar?.max = 10
@@ -175,7 +180,7 @@ class SecondGifSpeedActivity : AppActivity() {
 
     //生成gif
     private fun createGif(url: String) {
-        val gifList = ImageUtils.getGifDataBitmap(File(url))
+        val gifList = ImageUtils.getGifDataBitmap(File(url),isSecondDevice)
         val duration = ImageUtils.getGifAnimationDuration(File(url))
         val speed = MmkvUtils.getGifSpeed()
         val realSpeed = 11 - speed
@@ -201,7 +206,7 @@ class SecondGifSpeedActivity : AppActivity() {
 
     private fun changeGifSpeed(speed: Int) {
         Timber.e("------速度+" + speed)
-        val pickList = ImageUtils.getGifDataBitmap(File(dialFileUrl))
+        val pickList = ImageUtils.getGifDataBitmap(File(dialFileUrl),isSecondDevice)
         val markGif = GifMaker(1)
         val realSpeed = 11 - speed
         markGif.setOnGifListener { current, total ->
