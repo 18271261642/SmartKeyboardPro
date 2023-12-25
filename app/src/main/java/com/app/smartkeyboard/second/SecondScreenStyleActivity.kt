@@ -62,7 +62,7 @@ class SecondScreenStyleActivity : AppActivity() {
         scImg1?.setImageResource(if(index == 0) R.mipmap.ic_s_c_1 else R.mipmap.ic_s_1)
         scImg2?.setImageResource(if(index == 1 )R.mipmap.ic_s_c_2 else R.mipmap.ic_s_2)
         scImg3?.setImageResource(if(index == 2) R.mipmap.ic_s_c_3 else R.mipmap.ic_s_3)
-        scImg4?.setImageResource(if(index == 3) R.mipmap.ic_s_c_4 else R.mipmap.ic_s_2)
+        scImg4?.setImageResource(if(index == 3) R.mipmap.ic_s_c_4 else R.mipmap.ic_s_4)
 
         //#8C8D91
         scTxt1?.setTextColor(if(index == 0)Color.parseColor("#FFFFFF") else Color.parseColor("#8C8D91"))

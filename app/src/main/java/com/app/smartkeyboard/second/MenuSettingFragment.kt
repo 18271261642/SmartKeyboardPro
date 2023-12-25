@@ -8,10 +8,14 @@ import com.app.smartkeyboard.R
 import com.app.smartkeyboard.action.TitleBarFragment
 import com.app.smartkeyboard.adapter.OnCommItemClickListener
 import com.app.smartkeyboard.ble.ConnStatus
+import com.app.smartkeyboard.ble.DeviceTypeConst
 import com.app.smartkeyboard.dialog.DeleteDeviceDialog
 import com.app.smartkeyboard.utils.BikeUtils
 import com.app.smartkeyboard.utils.MmkvUtils
 import com.app.smartkeyboard.widget.CheckButtonView
+import com.fasterxml.jackson.databind.ser.Serializers.Base
+import com.hjq.toast.ToastUtils
+import timber.log.Timber
 
 
 /**
@@ -59,8 +63,7 @@ class MenuSettingFragment : TitleBarFragment<SecondHomeActivity>() {
 
     override fun initData() {
 
-        screenStyleButtonView?.setIsNormal(true)
-        clockStyleButtonView?.setIsNormal(true)
+
     }
 
 
@@ -72,6 +75,11 @@ class MenuSettingFragment : TitleBarFragment<SecondHomeActivity>() {
     override fun onFragmentResume(first: Boolean) {
         super.onFragmentResume(first)
 
+
+    }
+
+    override fun onResume() {
+        super.onResume()
         showDeviceType()
     }
 
@@ -87,8 +95,21 @@ class MenuSettingFragment : TitleBarFragment<SecondHomeActivity>() {
         secondUploadGifView?.visibility =  View.VISIBLE
 
 
+        val isSecond = BaseApplication.getBaseApplication().deviceTypeConst == DeviceTypeConst.DEVICE_SECOND
+        Timber.e("-------isSconde="+isSecond)
 
+        if(isSecond){
+            screenStyleButtonView?.setIsNormal(true)
+            clockStyleButtonView?.setIsNormal(true)
+            screenStyleButtonView?.visibility = View.VISIBLE
+            clockStyleButtonView?.visibility = View.VISIBLE
+            settingAlarmLayout?.visibility = View.VISIBLE
 
+        }else{
+            screenStyleButtonView?.visibility = View.GONE
+            clockStyleButtonView?.visibility = View.GONE
+            settingAlarmLayout?.visibility = View.GONE
+        }
 
 
     }
@@ -97,21 +118,28 @@ class MenuSettingFragment : TitleBarFragment<SecondHomeActivity>() {
         super.onClick(view)
         val id = view?.id
 
+        val icConn = BaseApplication.getBaseApplication().connStatus == ConnStatus.CONNECTED
+
         when(id){
             R.id.settingNoteLayout->{  //备忘录
 
                 startActivity(NotePadActivity::class.java)
             }
             R.id.settingAlarmLayout->{  //闹钟
-//                if(BikeUtils.isEmpty(getMac())){
-//                    return
-//                }
+                if(!icConn){
+                    ToastUtils.show(resources.getString(R.string.string_not_conn))
+                    return
+                }
                 startActivity(AlarmListActivity::class.java)
             }
             R.id.secondUploadGifView->{ //上传动画
                 if(BikeUtils.isEmpty(getMac())){
                     showConnDialog()
                    return
+                }
+                if(!icConn){
+                    ToastUtils.show(resources.getString(R.string.string_not_conn))
+                    return
                 }
                 startActivity(SecondGifHomeActivity::class.java)
             }
@@ -120,11 +148,19 @@ class MenuSettingFragment : TitleBarFragment<SecondHomeActivity>() {
                     showConnDialog()
                     return
                 }
+                if(!icConn){
+                    ToastUtils.show(resources.getString(R.string.string_not_conn))
+                    return
+                }
                 startActivity(ClockStyleActivity::class.java)
             }
             R.id.screenStyleButtonView->{   //屏保样式
                 if(BikeUtils.isEmpty(getMac())){
                     showConnDialog()
+                    return
+                }
+                if(!icConn){
+                    ToastUtils.show(resources.getString(R.string.string_not_conn))
                     return
                 }
                 startActivity(SecondScreenStyleActivity::class.java)

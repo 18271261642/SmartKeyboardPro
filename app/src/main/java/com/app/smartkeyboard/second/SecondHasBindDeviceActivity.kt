@@ -90,6 +90,7 @@ class SecondHasBindDeviceActivity :AppActivity() {
                 if(isUnBind){
                     DbManager.getInstance().deleteBindDevice(mac)
                     val conBleMac = MmkvUtils.getConnDeviceMac()
+                    MmkvUtils.setDeviceType(1)
                     if(!BikeUtils.isEmpty(conBleMac) && mac == conBleMac){
                         BaseApplication.getBaseApplication().connStatus = ConnStatus.NOT_CONNECTED
                         BaseApplication.getBaseApplication().bleOperate.disConnYakDevice()

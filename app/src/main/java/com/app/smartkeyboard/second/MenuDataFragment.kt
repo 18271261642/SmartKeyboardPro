@@ -115,17 +115,6 @@ class MenuDataFragment : TitleBarFragment<SecondHomeActivity>() {
     override fun initData() {
         //homeTempView?.setTemperatures("--","--","--")
 
-        //homeTempView?.setDefaultValue()
-
-//        val list = mutableListOf<UseTimeBean>()
-//        list.add(UseTimeBean(12, 10))
-//        list.add(UseTimeBean(13, 10))
-//        list.add(UseTimeBean(14, 10))
-//        list.add(UseTimeBean(15, 10))
-//        list.add(UseTimeBean(16, 10))
-//        list.add(UseTimeBean(17, 10))
-//        list.add(UseTimeBean(18, 10))
-//        homeDataChartView?.setDataSource(list)
     }
 
 
@@ -153,10 +142,11 @@ class MenuDataFragment : TitleBarFragment<SecondHomeActivity>() {
 
     private fun getDeviceData() {
         val isConnStatus = BaseApplication.getBaseApplication().connStatus
-//        if (isConnStatus != ConnStatus.CONNECTED) {
-//            homeTempView?.setDefaultValue()
-//            return
-//        }
+        if (isConnStatus != ConnStatus.CONNECTED) {
+            homeTempView?.setDefaultValue()
+            homeDataChartView?.setDataSource(arrayListOf())
+            return
+        }
 
 
         BaseApplication.getBaseApplication().bleOperate.getDeviceSystemData(object :
@@ -221,7 +211,7 @@ class MenuDataFragment : TitleBarFragment<SecondHomeActivity>() {
                 if (list != null) {
                     homeDataChartView?.setDataSource(list)
                 }else{
-
+                    homeDataChartView?.setDataSource(arrayListOf())
                 }
             }
 

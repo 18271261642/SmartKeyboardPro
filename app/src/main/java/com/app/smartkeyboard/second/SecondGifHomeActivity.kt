@@ -161,12 +161,63 @@ class SecondGifHomeActivity : AppActivity() {
         Timber.e("-----目录=" + saveCropFile.path)
         val array = saveCropFile.listFiles()
         if (array != null && array.size > 0) {
+
+            val isSecond = BaseApplication.getBaseApplication().deviceTypeConst == DeviceTypeConst.DEVICE_SECOND
+
+            //判断尺寸
             val firstFilePath = array.get(0).path
-            Glide.with(this).load(firstFilePath)
-                .transform(MultiTransformation(CenterCrop(), CircleCrop())).skipMemoryCache(false).into(secondCusGifImageView!!)
+            val file = File(firstFilePath)
+            if(file == null || !file.exists()){
+                return
+            }
+           if(firstFilePath.contains("jpg")){
+               val imgBitmap = BitmapFactory.decodeFile(firstFilePath)
+               val width = imgBitmap.width
+               if(isSecond){
+                   if(width!= 390){
+                       file.delete()
+                       loadDefaultImg()
+                   }
+               }else{
+                   if(width != 320){
+                       file.delete()
+                       loadDefaultImg()
+                   }
+               }
+               return
+           }
+
+            if(firstFilePath.contains("gif")){
+                val width = ImageUtils.getGifWidth(file)
+                if(isSecond){
+                    if(width != 390){
+                        file.delete()
+                        loadDefaultImg()
+                    }
+                }else{
+                    if(width != 320){
+                        file.delete()
+                        loadDefaultImg()
+                    }
+                }
+            }
+
+            if(isSecond){
+                Glide.with(this).load(firstFilePath)
+                    .transform(MultiTransformation(CenterCrop(), CircleCrop())).skipMemoryCache(false).into(secondCusGifImageView!!)
+            }else{
+                Glide.with(this).load(firstFilePath)
+                   .into(secondCusGifImageView!!)
+            }
+
+
         }
     }
 
+
+    private fun loadDefaultImg(){
+        Glide.with(this).load(R.mipmap.ic_second_add_gif).into(secondCusGifImageView!!)
+    }
 
     override fun onClick(view: View?) {
         super.onClick(view)

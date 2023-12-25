@@ -51,6 +51,23 @@ public class ImageUtils {
     }
 
 
+    public static int getGifWidth(File gifFile){
+        try {
+            GifDrawable gifDrawable = new GifDrawable(gifFile);
+            int count = gifDrawable.getNumberOfFrames();
+            if(count == 0){
+                return 0;
+            }
+            Bitmap bt = gifDrawable.seekToFrameAndGet(0);
+            return bt.getWidth();
+        }catch (Exception e){
+            e.printStackTrace();
+            return 0;
+        }
+
+    }
+
+
     public static List<Bitmap> getGifDataBitmap(File gifFile,boolean isSecond) {
         List<Bitmap> lt = new ArrayList<>();
         try {

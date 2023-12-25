@@ -103,6 +103,7 @@
             app:bar_leftTextColor="@color/white"
             app:bar_leftText="@string/string_auto_lock"
             app:bar_lineVisible="false"
+            android:visibility="gone"
             app:bar_rightTextColor="@color/white"
             app:bar_rightText="1分钟"
             app:bar_rightDrawable="@mipmap/ic_white_right_back"

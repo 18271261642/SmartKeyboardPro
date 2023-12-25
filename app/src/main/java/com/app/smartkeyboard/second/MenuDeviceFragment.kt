@@ -263,6 +263,7 @@ class MenuDeviceFragment : TitleBarFragment<SecondHomeActivity>(){
                     BaseApplication.getBaseApplication().bleOperate.disConnYakDevice()
                     MmkvUtils.saveConnDeviceName("")
                     MmkvUtils.saveConnDeviceMac("")
+                    MmkvUtils.setDeviceType(1)
                     attachActivity.showIsAddDevice()
 
                     showConnState()
