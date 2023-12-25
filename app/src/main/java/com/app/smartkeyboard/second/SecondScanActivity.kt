@@ -656,21 +656,21 @@ class SecondScanActivity : AppActivity() {
 
 
 
-            if (repeatList?.size!! > 40) {
-                return
-            }
-            if(!repeatList!!.contains(bleMac)){
-                bleMac?.let { repeatList?.add(it) }
-                val b = BleBean(p0.device,p0.rssi,"",recordStr)
-                b.bleMac = bleMac
-                b.bleName = bleName
-                list?.add(b)
-                list?.sortBy {
-                    Math.abs(it.rssi)
-                }
-            }
+//            if (repeatList?.size!! > 40) {
+//                return
+//            }
+//            if(!repeatList!!.contains(bleMac)){
+//                bleMac?.let { repeatList?.add(it) }
+//                val b = BleBean(p0.device,p0.rssi,"",recordStr)
+//                b.bleMac = bleMac
+//                b.bleName = bleName
+//                list?.add(b)
+//                list?.sortBy {
+//                    Math.abs(it.rssi)
+//                }
+//            }
 
-/*
+
             typeMap.forEach {
                 val keyStr = it.key
                 val tempK = Utils.changeStr(keyStr)
@@ -695,7 +695,9 @@ class SecondScanActivity : AppActivity() {
                     }
 
                 }
-            }*/
+            }
+
+
             adapter?.notifyDataSetChanged()
 
         }
