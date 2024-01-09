@@ -155,7 +155,6 @@ public class OtaDialogView extends AppCompatDialog {
                     dismiss();
                 }
 
-
             }
             if(msg.what == 8){  //未找到对应的ota端口
                 upgradeStateTv.setText(getContext().getResources().getString(R.string.string_upgrade_failed)+8);
