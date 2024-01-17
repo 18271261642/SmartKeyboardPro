@@ -14,4 +14,7 @@
     <external-path name="external" path="." />
 
     <external-files-path name="DCIM" path="." />
+    <files-path
+        name="imfit_paths"
+        path="path"/><!--Android/data/应用根目录/files/下的子目录-->
 </paths>

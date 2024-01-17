@@ -30,8 +30,10 @@ import com.app.smartkeyboard.dialog.ShowProgressDialog
 import com.app.smartkeyboard.dialog.UploadAnimationDialog
 import com.app.smartkeyboard.img.CameraActivity
 import com.app.smartkeyboard.img.ImageSelectActivity
+import com.app.smartkeyboard.utils.BikeUtils
 import com.app.smartkeyboard.utils.BitmapAndRgbByteUtil
 import com.app.smartkeyboard.utils.CalculateUtils
+import com.app.smartkeyboard.utils.GetJsonDataUtil
 import com.app.smartkeyboard.utils.ImageUtils
 import com.app.smartkeyboard.utils.ImgUtil
 import com.app.smartkeyboard.utils.MmkvUtils
@@ -48,6 +50,8 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.request.target.Target
+import com.hjq.bar.OnTitleBarListener
+import com.hjq.bar.TitleBar
 import com.hjq.permissions.OnPermissionCallback
 import com.hjq.permissions.Permission
 import com.hjq.permissions.XXPermissions
@@ -61,6 +65,10 @@ import java.io.File
 
 class SecondGifHomeActivity : AppActivity() {
 
+    val gifStringBuffer = StringBuffer()
+
+
+    private var gifHomeTitleBar : TitleBar ?= null
     //自定义
     private var secondGifCusLayout: LinearLayout? = null
 
@@ -113,6 +121,15 @@ class SecondGifHomeActivity : AppActivity() {
 
             }
 
+
+            if(msg.what == 0x88){
+                hideDialog()
+                val logPath = getExternalFilesDir(null)?.path
+                val name = BikeUtils.getCurrDate()+".json"
+                val file = logPath+"/"+name
+                GetJsonDataUtil().openFileThirdApp(this@SecondGifHomeActivity,file)
+            }
+
         }
     }
 
@@ -121,6 +138,7 @@ class SecondGifHomeActivity : AppActivity() {
     }
 
     override fun initView() {
+        gifHomeTitleBar = findViewById(R.id.gifHomeTitleBar)
         secondDefaultAnimationImgView = findViewById(R.id.secondDefaultAnimationImgView)
         secondGifCusLayout = findViewById(R.id.secondGifCusLayout)
         secondGifDormancyLayout = findViewById(R.id.secondGifDormancyLayout)
@@ -150,6 +168,32 @@ class SecondGifHomeActivity : AppActivity() {
             .into(secondDefaultAnimationImgView!!)
 
 
+        gifHomeTitleBar?.setOnTitleBarListener(object : OnTitleBarListener{
+            override fun onLeftClick(view: View?) {
+                finish()
+            }
+
+            override fun onTitleClick(view: View?) {
+
+            }
+
+            override fun onRightClick(view: View?) {
+                if(gifStringBuffer.isEmpty()){
+                    ToastUtils.show("There is no log!")
+                    return
+                }
+                showDialog("Share ...")
+               //分享
+                val gifLog = gifStringBuffer.toString()
+
+                val logPath = getExternalFilesDir(null)?.path+"/"
+                val name = BikeUtils.getCurrDate()+".json"
+                GetJsonDataUtil().writeTxtToFile(gifLog,logPath,name)
+
+                handlers.sendEmptyMessageDelayed(0x88,2000)
+            }
+
+        })
     }
 
     override fun initData() {
@@ -160,12 +204,13 @@ class SecondGifHomeActivity : AppActivity() {
         val saveCropFile = File(cropImgPath)
         Timber.e("-----目录=" + saveCropFile.path)
         val array = saveCropFile.listFiles()
-        if (array != null && array.size > 0) {
+        if (array != null && array.isNotEmpty()) {
 
             val isSecond = BaseApplication.getBaseApplication().deviceTypeConst == DeviceTypeConst.DEVICE_SECOND
 
             //判断尺寸
             val firstFilePath = array.get(0).path
+            Timber.e("-----firstPath="+firstFilePath)
             val file = File(firstFilePath)
             if(file == null || !file.exists()){
                 return
@@ -184,7 +229,7 @@ class SecondGifHomeActivity : AppActivity() {
                        loadDefaultImg()
                    }
                }
-               return
+              // return
            }
 
             if(firstFilePath.contains("gif")){
@@ -477,7 +522,9 @@ class SecondGifHomeActivity : AppActivity() {
 
 
     private fun setSelectImg(localUrl: String, code: Int) {
+        gifStringBuffer.delete(0,gifStringBuffer.length)
         Timber.e("--------选择图片=$localUrl")
+        gifStringBuffer.append("----------->>>>选择图片 url=$localUrl\n")
         if (localUrl.contains(".gif")) {
             // dealWidthGif(localUrl)
 
@@ -486,7 +533,7 @@ class SecondGifHomeActivity : AppActivity() {
                 ToastUtils.show(resources.getString(R.string.string_gig_small))
                 return
             }
-
+            gifStringBuffer.append("----------->>>>GIF的大小=$gifList\n")
             val intent = Intent(this@SecondGifHomeActivity, SecondGifSpeedActivity::class.java)
             intent.putExtra("file_url", localUrl)
             startActivityForResult(intent, 1001)
@@ -500,9 +547,10 @@ class SecondGifHomeActivity : AppActivity() {
             Uri.fromFile(File(localUrl))
         }
         Timber.e("-----uri=$uri")
-
+        gifStringBuffer.append("----------->>>>选择图片的地址 =$uri\n")
         val date = System.currentTimeMillis() / 1000
         val path = "$cropImgPath/$date.jpg"
+        gifStringBuffer.append("----------->>>>选择图片裁剪的地址 =$path\n")
         this.saveCropPath = path
         val cropFile = File(path)
         val destinationUri = Uri.fromFile(cropFile)
@@ -562,7 +610,7 @@ class SecondGifHomeActivity : AppActivity() {
                 Timber.e("-------裁剪后的图片=" + (File(saveCropPath)).path)
                 val url = File(saveCropPath).path
                 dialBean.imgUrl = url
-
+                gifStringBuffer.append("----------->>>>裁剪后图片的地址=$url\n")
                 setDialToDevice(byteArrayOf(0x00))
             }
 
@@ -699,6 +747,7 @@ class SecondGifHomeActivity : AppActivity() {
             val tempBitmap = BitmapAndRgbByteUtil.compressImage(bitmap)
             Timber.e("--------bitmap大小=" + tempBitmap.byteCount + " " + bitmap.byteCount)
             val tempArray = BitmapAndRgbByteUtil.bitmap2RGBData(tempBitmap)
+            gifStringBuffer.append("----------->>>>裁剪后图片大小 size=${tempArray.size}"+"\n")
             val msg = handlers.obtainMessage()
             msg.what = 0x01
             msg.obj = tempArray
@@ -754,7 +803,7 @@ class SecondGifHomeActivity : AppActivity() {
         Timber.e("-------表盘指令=" + str)
         //showLogTv()
 
-
+        gifStringBuffer.append("----------->>>>进入表盘模式=$str"+"\n")
         BaseApplication.getBaseApplication().bleOperate.startFirstDial(
             resultArray
         ) { data -> //880000000000030f0904 02
@@ -777,7 +826,7 @@ class SecondGifHomeActivity : AppActivity() {
 //            showLogTv()
 
             if (data.size == 11 && data[8].toInt() == 9 && data[9].toInt() == 4) {
-
+                gifStringBuffer.append("----------->>>>进入表盘模式指令返回=${Utils.formatBtArrayToString(data)}"+"\n")
                 val codeStatus = data[10].toInt()
                 if (codeStatus == 1) {
                     cancelProgressDialog()
@@ -801,8 +850,12 @@ class SecondGifHomeActivity : AppActivity() {
                 // stringBuilder.append("3.10.3 APP 端设擦写设备端指定的 FLASH 数据块" + Utils.formatBtArrayToString(array)+"\n")
                 // showLogTv()
 
+
+                gifStringBuffer.append("----------->>>>开始擦写设备端制定的flash数据块 = ${Utils.formatBtArrayToString(array)}"+"\n")
                 BaseApplication.getBaseApplication().bleOperate.setIndexDialFlash(array) { data ->
-                    Timber.e("-----大塔=" + Utils.formatBtArrayToString(data))
+                    val st = Utils.formatBtArrayToString(data)
+                    Timber.e("-----大塔=" + st)
+                    gifStringBuffer.append("----------->>>>开始擦写设备端制定的flash数据块 返回 = $st\n")
                     //880000000000030f090402
                     //88 00 00 00 00 00 03 0e 08 04 02
                     if (data.size == 11 && data[0].toInt() == -120 && data[8].toInt() == 8 && data[9].toInt() == 4 && data[10].toInt() == 2) {
@@ -836,6 +889,7 @@ class SecondGifHomeActivity : AppActivity() {
     //次数
     var count = 5
     private fun getDeviceStatus() {
+        gifStringBuffer.append("----------->>>>获取设备当前状态 \n")
         BaseApplication.getBaseApplication().bleOperate.setClearListener()
         BaseApplication.getBaseApplication().bleOperate.getKeyBoardStatus(object :
             OnCommBackDataListener {
@@ -854,6 +908,7 @@ class SecondGifHomeActivity : AppActivity() {
                     } else {
                         cancelProgressDialog()
                         ToastUtils.show("设备正忙!")
+                        gifStringBuffer.append("----------->>>>设备正忙 \n")
                         count = 5
                     }
                 }
@@ -876,7 +931,7 @@ class SecondGifHomeActivity : AppActivity() {
             0x00, 0xff.toByte(), 0xff.toByte(),
             0xff.toByte()
         )
-
+        gifStringBuffer.append("----------->>>>开始写入flash数据块 \n")
 
         val resultArray = ImgUtil.getDialContent(startByte, startByte, grbByte, 1000 + 701, -100, 0)
         Timber.e("-------reaulstArray=" + resultArray.size + " " + resultArray[0].size)
@@ -887,11 +942,14 @@ class SecondGifHomeActivity : AppActivity() {
         //记录发送的包数
         var sendPackSize = 0
 
+        gifStringBuffer.append("----------->>>>计算总的包数=$allPackSize\n")
+
         BaseApplication.getBaseApplication().bleOperate.writeDialFlash(
             resultArray
         ) { statusCode ->
             sendPackSize++
 
+            val conn = BaseApplication.getBaseApplication().connStatus
 
             //计算百分比
             var percentValue =
@@ -899,6 +957,9 @@ class SecondGifHomeActivity : AppActivity() {
             val showPercent = CalculateUtils.mul(percentValue, 100.0).toInt()
             //gifLogTv?.text = sendPackSize.toString()+"/"+allPackSize+" "+showPercent
             showProgressDialog(resources.getString(R.string.string_sync_ing) + (if (showPercent >= 100) 100 else showPercent) + "%")
+
+            gifStringBuffer.append("----------->>>>写入百分比=$showPercent 状态=$statusCode 连接状态=$conn\n")
+           // gifStringBuffer.append("----------->>>>percentValue 状态=$statusCode\n")
 
             /**
              * 0x01：更新失败

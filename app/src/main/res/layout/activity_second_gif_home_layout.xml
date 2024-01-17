@@ -10,11 +10,13 @@
 
 
     <com.hjq.bar.TitleBar
+        android:id="@+id/gifHomeTitleBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/transparent"
         app:titleColor="@color/white"
         app:title="@string/string_upload_anim"
+        app:rightTitle="Share log"
         app:lineVisible="false"
         app:leftIcon="@drawable/ic_white_left_back"/>
 
