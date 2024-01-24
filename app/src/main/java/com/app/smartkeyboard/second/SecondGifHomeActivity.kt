@@ -533,7 +533,7 @@ class SecondGifHomeActivity : AppActivity() {
                 ToastUtils.show(resources.getString(R.string.string_gig_small))
                 return
             }
-            gifStringBuffer.append("----------->>>>GIF的大小=$gifList\n")
+            gifStringBuffer.append("----------->>>>GIF的图片数量=${gifList.size}\n")
             val intent = Intent(this@SecondGifHomeActivity, SecondGifSpeedActivity::class.java)
             intent.putExtra("file_url", localUrl)
             startActivityForResult(intent, 1001)

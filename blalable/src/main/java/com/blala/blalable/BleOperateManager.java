@@ -615,7 +615,7 @@ public class BleOperateManager {
 
             }
         });
-        handler.sendEmptyMessageDelayed(0x01, 20);
+        handler.sendEmptyMessageDelayed(0x01, 50);
     }
 
 
