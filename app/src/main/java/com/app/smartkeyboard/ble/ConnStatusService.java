@@ -373,6 +373,7 @@ public class ConnStatusService extends Service {
                 MmkvUtils.saveConnDeviceMac(bleMac);
                 MmkvUtils.saveConnDeviceName(name);
                 sendActionBroad(BleConstant.BLE_CONNECTED_ACTION);
+                BaseApplication.getBaseApplication().setOpenAppTime();
 //                Timber.e("-------连接成功="+code);
                 handler.postDelayed(new Runnable() {
                     @Override

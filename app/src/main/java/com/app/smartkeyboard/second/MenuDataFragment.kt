@@ -184,7 +184,7 @@ class MenuDataFragment : TitleBarFragment<SecondHomeActivity>() {
     private fun showConnDialog() {
         val dialog = DeleteDeviceDialog(attachActivity, com.bonlala.base.R.style.BaseDialogTheme)
         dialog.show()
-        dialog.setTitleTxt("是否切换设备?")
+        dialog.setTitleTxt(resources.getString(R.string.string_switch_device))
         dialog.setOnCommClickListener(object : OnCommItemClickListener {
             override fun onItemClick(position: Int) {
                 dialog.dismiss()

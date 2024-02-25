@@ -12,7 +12,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
@@ -24,6 +23,7 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
@@ -41,15 +41,14 @@ import com.app.smartkeyboard.dialog.DeleteDeviceDialog
 import com.app.smartkeyboard.utils.BikeUtils
 import com.app.smartkeyboard.utils.BonlalaUtils
 import com.app.smartkeyboard.utils.MmkvUtils
+import com.app.smartkeyboard.viewmodel.SecondHomeViewModel
 import com.blala.blalable.BleConstant
 import com.blala.blalable.Utils
-import com.blala.blalable.listener.BleScanListener
 import com.blala.blalable.listener.OnCommBackDataListener
 import com.google.gson.Gson
 import com.hjq.permissions.OnPermissionCallback
 import com.hjq.permissions.XXPermissions
 import com.hjq.toast.ToastUtils
-import com.inuker.bluetooth.library.search.SearchResult
 import timber.log.Timber
 import java.util.Locale
 import kotlin.math.abs
@@ -60,6 +59,9 @@ import kotlin.math.abs
  *Date 2023/7/12
  */
 class SecondScanActivity : AppActivity() {
+
+
+    private var viewModel : SecondHomeViewModel ?= null
 
     private var secondScanRy: RecyclerView? = null
 
@@ -157,7 +159,7 @@ class SecondScanActivity : AppActivity() {
 
 
     override fun initData() {
-
+        viewModel = ViewModelProvider(this)[SecondHomeViewModel::class.java]
         val intentFilter = IntentFilter()
         intentFilter.addAction(BleConstant.BLE_CONNECTED_ACTION)
         intentFilter.addAction(BleConstant.BLE_DIS_CONNECT_ACTION)
@@ -330,6 +332,7 @@ class SecondScanActivity : AppActivity() {
                 MmkvUtils.saveProductNumberCode(bean.productNumber)
                 MmkvUtils.saveConnDeviceMac(mac)
                 MmkvUtils.saveConnDeviceName(bean.bleName)
+                BaseApplication.getBaseApplication().setOpenAppTime()
                 getDeviceType()
                 dealScanDevice()
                 //initData()
@@ -479,6 +482,7 @@ class SecondScanActivity : AppActivity() {
                             MmkvUtils.saveConnDeviceMac(mac)
                             MmkvUtils.saveConnDeviceName(bean.bleName)
                             BaseApplication.getBaseApplication().connStatus = ConnStatus.CONNECTED
+                            viewModel?.getLocation(this@SecondScanActivity,this@SecondScanActivity)
                             getDeviceType()
                             dealScanDevice()
                         }

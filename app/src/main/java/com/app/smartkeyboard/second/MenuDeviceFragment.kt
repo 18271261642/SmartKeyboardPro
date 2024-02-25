@@ -215,6 +215,7 @@ class MenuDeviceFragment : TitleBarFragment<SecondHomeActivity>(){
           //  deviceAboutTv!!.setBackgroundResource(R.drawable.no_conn_shape)
             menuScheduleTv?.setBackgroundResource(R.drawable.no_conn_shape)
             menuDeviceRecyclerLayout?.visibility = View.GONE
+            menuBatteryTv?.text =  String.format(resources.getString(R.string.string_battery),"--")
         }else{
             deviceUnBindTv?.visibility = View.VISIBLE
             val isConnStatus = BaseApplication.getBaseApplication().connStatus

@@ -124,6 +124,7 @@ class SecondHomeActivity : AppActivity() {
 
 
         val intentFilter = IntentFilter()
+        intentFilter.addAction(Intent.ACTION_TIME_TICK)
         intentFilter.addAction(BleConstant.BLE_CONNECTED_ACTION)
         intentFilter.addAction(BleConstant.BLE_DIS_CONNECT_ACTION)
         intentFilter.addAction(BleConstant.BLE_SCAN_COMPLETE_ACTION)
@@ -404,6 +405,22 @@ class SecondHomeActivity : AppActivity() {
 
             if(action == "weather_action"){
                 getWeather()
+            }
+
+            if(action == Intent.ACTION_TIME_TICK){
+                val currTime = System.currentTimeMillis()/1000/60
+
+                val saveTime = (currTime - BaseApplication.getBaseApplication().openAppTime)
+
+                val interval = (saveTime.toInt()) % 15
+
+                Timber.e("---------currTime="+currTime+" "+saveTime+" interval="+interval)
+
+
+
+                if(interval == 0){
+                    getWeather()
+                }
             }
         }
 

@@ -397,32 +397,56 @@ class SecondHomeViewModel : ViewModel() {
 
         //   stringBuffer.append("00FA")
         //当天最高温度 2 个byte
-        val currMaxTempByte = HexDump.toByteArrayTwo((weatherBean.getTempMax().toFloat() * 10).toInt())
-        stringBuffer.append(HexDump.bytesToString(currMaxTempByte))
+        if(weatherBean.tempMax == null){
+            stringBuffer.append("FFFF")
+        }else{
+            val currMaxTempByte = HexDump.toByteArrayTwo((weatherBean.getTempMax().toFloat() * 10).toInt())
+            stringBuffer.append(HexDump.bytesToString(currMaxTempByte))
+        }
+
         //当天最低温度 2 个byte
-        val currMinTempByte = HexDump.toByteArrayTwo((weatherBean.getTempMin().toFloat() * 10).toInt())
-        stringBuffer.append(HexDump.bytesToString(currMinTempByte))
+        if(weatherBean.tempMin == null){
+            stringBuffer.append("FFFF")
+        }else{
+            val currMinTempByte = HexDump.toByteArrayTwo((weatherBean.getTempMin().toFloat() * 10).toInt())
+            stringBuffer.append(HexDump.bytesToString(currMinTempByte))
+        }
+
         //空气质量指数 2 个byte weatherBean.getAirAqi() as Int
         val airAqiByte = HexDump.toByteArrayTwo(50)
         stringBuffer.append(HexDump.bytesToString(airAqiByte))
         //相对湿度 2 个byte
-        val humidityByte = HexDump.toByteArrayTwo(weatherBean.getHumidity().toInt()*10)
-        stringBuffer.append(HexDump.bytesToString(humidityByte))
+        if(weatherBean.humidity == null){
+            stringBuffer.append("FFFF")
+        }else{
+            val humidityByte = HexDump.toByteArrayTwo(weatherBean.getHumidity().toInt()*10)
+            stringBuffer.append(HexDump.bytesToString(humidityByte))
+        }
         //紫外线指数 1个byte
-        val uvIndexByte: Byte = Integer.valueOf(weatherBean.getUvIndex()).toByte()
-        stringBuffer.append(String.format("%02x", uvIndexByte))
+        if(weatherBean.uvIndex == null){
+            stringBuffer.append("FF")
+        }else{
+            val uvIndexByte: Byte = Integer.valueOf(weatherBean.getUvIndex()).toByte()
+            stringBuffer.append(String.format("%02x", uvIndexByte))
+        }
+
         //日出时间
-        val sunriseTime: String = weatherBean.getSunrise()
-        //日出时 一个byte
-        stringBuffer.append(String.format("%02x", DateUtil.getHHmmForHour(sunriseTime)))
-        //日出分 一个byte
-        stringBuffer.append(String.format("%02x", DateUtil.getHHmmForMinute(sunriseTime)))
-        //日落时间
-        val sunsetTime: String = weatherBean.getSunset()
-        //日落时 一个byte
-        stringBuffer.append(String.format("%02x", DateUtil.getHHmmForHour(sunsetTime)))
-        //日落分 一个byte
-        stringBuffer.append(String.format("%02x", DateUtil.getHHmmForMinute(sunsetTime)))
+        if(weatherBean.sunrise == null){
+            stringBuffer.append("FFFFFFFF")
+        }else{
+            val sunriseTime: String = weatherBean.getSunrise()
+            //日出时 一个byte
+            stringBuffer.append(String.format("%02x", DateUtil.getHHmmForHour(sunriseTime)))
+            //日出分 一个byte
+            stringBuffer.append(String.format("%02x", DateUtil.getHHmmForMinute(sunriseTime)))
+            //日落时间
+            val sunsetTime: String = weatherBean.getSunset()
+            //日落时 一个byte
+            stringBuffer.append(String.format("%02x", DateUtil.getHHmmForHour(sunsetTime)))
+            //日落分 一个byte
+            stringBuffer.append(String.format("%02x", DateUtil.getHHmmForMinute(sunsetTime)))
+        }
+
         //风速
 //        val wind = HexDump.toByteArrayTwo((weatherBean.windKph.toFloat()*10).toInt())
 //        val windStr = HexDump.bytesToString(wind)

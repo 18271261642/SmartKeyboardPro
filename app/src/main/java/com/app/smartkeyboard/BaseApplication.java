@@ -74,6 +74,7 @@ public class BaseApplication extends BleApplication {
     /**搜索页面是否打开了，搜索页面打开了不停止搜索**/
     private boolean isActivityScan = false;
 
+    private long openAppTime = 0;
 
     private DeviceTypeConst deviceTypeConst = DeviceTypeConst.DEVICE_FIRST;
 
@@ -121,6 +122,14 @@ public class BaseApplication extends BleApplication {
         this.bindService(it,notifyConnection,Context.BIND_AUTO_CREATE);
 
         initThirdSDK();
+
+        setOpenAppTime();
+    }
+
+
+    public void setOpenAppTime(){
+        long t = (System.currentTimeMillis()/1000/60);
+        setOpenAppTime(t);
     }
 
 
@@ -278,5 +287,14 @@ public class BaseApplication extends BleApplication {
 
     public DeviceTypeConst getDeviceTypeConst() {
         return deviceTypeConst;
+    }
+
+
+    public long getOpenAppTime() {
+        return openAppTime;
+    }
+
+    public void setOpenAppTime(long openAppTime) {
+        this.openAppTime = openAppTime;
     }
 }
