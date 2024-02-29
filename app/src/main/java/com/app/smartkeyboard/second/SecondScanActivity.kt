@@ -19,6 +19,7 @@ import android.os.Message
 import android.util.DisplayMetrics
 import android.view.Gravity
 import android.view.View
+import android.view.View.OnLongClickListener
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -154,6 +155,12 @@ class SecondScanActivity : AppActivity() {
 
         scanLeftImageView?.setOnClickListener {
             finish()
+        }
+
+        findViewById<TextView>(R.id.scanTitleTv).setOnLongClickListener {
+            startActivity(ScanLogActivity::class.java)
+
+            true
         }
     }
 

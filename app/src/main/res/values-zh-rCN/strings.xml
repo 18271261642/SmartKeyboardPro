@@ -2,6 +2,7 @@
     <string name="app_name">掌上悟确</string>
 
 
+    <string name="string_scan_filter">过滤规则</string>
     <string name="string_switch_device">是否切换设备?</string>
     <string name="string_screen_monitor">监控模式</string>
     <string name="string_screen_writing">打字模式</string>

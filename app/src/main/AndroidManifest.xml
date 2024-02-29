@@ -64,6 +64,9 @@
         </activity>
 
 
+        <activity android:name=".second.ScanLogActivity"
+            android:screenOrientation="portrait"/>
+
         <activity android:name=".second.SecondScreenStyleActivity"
             android:screenOrientation="portrait"/>
 

@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Pocket Wuque</string>
 
+
+    <string name="string_scan_filter">Filter rules</string>
     <string name="string_switch_device">Do you want to switch devices?</string>
     <string name="string_screen_monitor">监控模式</string>
     <string name="string_screen_writing">打字模式</string>

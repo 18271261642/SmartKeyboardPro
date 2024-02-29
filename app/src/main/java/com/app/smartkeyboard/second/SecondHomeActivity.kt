@@ -120,6 +120,9 @@ class SecondHomeActivity : AppActivity() {
         mPagerAdapter?.addFragment(MenuDeviceFragment.getInstance())
         mViewPager?.adapter = mPagerAdapter
         viewModel = ViewModelProvider(this).get(SecondHomeViewModel::class.java)
+        viewModel?.typeErrorData?.observe(this){
+            ToastUtils.show(it)
+        }
         viewModel?.getAllSupportDeviceType(this)
 
 

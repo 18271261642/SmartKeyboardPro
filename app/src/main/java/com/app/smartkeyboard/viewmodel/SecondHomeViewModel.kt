@@ -28,6 +28,7 @@ class SecondHomeViewModel : ViewModel() {
 
      var weatherStr = SingleLiveEvent<String>()
 
+    var typeErrorData = SingleLiveEvent<String>()
 
     //获取所有的设备类型列表
     fun getAllSupportDeviceType(lifecycleOwner: LifecycleOwner){
@@ -41,12 +42,14 @@ class SecondHomeViewModel : ViewModel() {
                         BaseApplication.supportDeviceTypeMap[it] = it
                     }
 
+                }else{
+                    typeErrorData.postValue(result!!)
                 }
 
             }
 
             override fun onHttpFail(e: Exception?) {
-
+                typeErrorData.postValue(e?.message)
             }
 
         })
