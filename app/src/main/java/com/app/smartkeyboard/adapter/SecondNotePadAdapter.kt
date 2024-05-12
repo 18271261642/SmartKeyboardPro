@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.app.smartkeyboard.R
@@ -27,6 +28,11 @@ class SecondNotePadAdapter(val context: Context, val list: MutableList<NoteBookB
     private var onLongClick : OnClickLongListener ?= null
 
 
+    private var onEditClick : OnCommItemClickListener ?= null
+
+    fun setOnEditItemClickListener(c : OnCommItemClickListener){
+        this.onEditClick = c
+    }
 
     fun setOnCommClickListener(onclick : OnCommItemClickListener){
         this.onItemClickListener = onclick
@@ -62,16 +68,20 @@ class SecondNotePadAdapter(val context: Context, val list: MutableList<NoteBookB
         holder.itemSecondTimeTv.text = BikeUtils.getFormatDate(bean.noteTimeLong,"yyyy/MM/dd")
         holder.itemSecondContentTv.text = bean.noteContent
 
+        holder.itemNoteEditImg.setOnClickListener {
+            onEditClick?.onItemClick(position)
+        }
+
         holder.itemView.setOnClickListener {
             val position = holder.layoutPosition
             onItemClickListener?.onItemClick(position)
         }
-
-        holder.itemView.setOnLongClickListener {
-            val position = holder.layoutPosition
-            onLongClick?.onLongClick(position)
-            true
-        }
+//
+//        holder.itemView.setOnLongClickListener {
+//            val position = holder.layoutPosition
+//            onLongClick?.onLongClick(position)
+//            true
+//        }
     }
 
 
@@ -81,6 +91,7 @@ class SecondNotePadAdapter(val context: Context, val list: MutableList<NoteBookB
         val itemSecondTimeTv: TextView = view.findViewById(R.id.itemSecondTimeTv)
         val itemSecondContentTv: TextView = view.findViewById(R.id.itemSecondContentTv)
 
+        val itemNoteEditImg : ImageView  = view.findViewById(R.id.itemNoteEditImg)
 
     }
 }

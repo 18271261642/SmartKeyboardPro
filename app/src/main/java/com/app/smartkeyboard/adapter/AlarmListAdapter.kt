@@ -92,31 +92,31 @@ class AlarmListAdapter(val context : Context,val list : MutableList<AlarmBean>) 
         val chartArray = repeatStr.toCharArray()
         //周日
         if(chartArray[0].toString() == "1"){
-            sb.append(context.resources.getString(R.string.string_sunday))
+            sb.append(context.resources.getString(R.string.string_sunday)+" ")
         }
         //周一
         if(chartArray[1].toString() == "1"){
-            sb.append(context.resources.getString(R.string.string_monday))
+            sb.append(context.resources.getString(R.string.string_monday)+" ")
         }
         //周二
         if(chartArray[2].toString() == "1"){
-            sb.append(context.resources.getString(R.string.string_tuesday))
+            sb.append(context.resources.getString(R.string.string_tuesday)+" ")
         }
         //周三
         if(chartArray[3].toString() == "1"){
-            sb.append(context.resources.getString(R.string.string_wednesday))
+            sb.append(context.resources.getString(R.string.string_wednesday)+" ")
         }
         //周四
         if(chartArray[4].toString() == "1"){
-            sb.append(context.resources.getString(R.string.string_thursday))
+            sb.append(context.resources.getString(R.string.string_thursday)+" ")
         }
         //周五
         if(chartArray[5].toString() == "1"){
-            sb.append(context.resources.getString(R.string.string_friday))
+            sb.append(context.resources.getString(R.string.string_friday)+" ")
         }
         //周六
         if(chartArray[6].toString() == "1"){
-            sb.append(context.resources.getString(R.string.string_saturday))
+            sb.append(context.resources.getString(R.string.string_saturday)+" ")
         }
         return sb.toString()
     }

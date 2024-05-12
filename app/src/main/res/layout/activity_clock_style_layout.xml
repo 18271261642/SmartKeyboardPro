@@ -11,7 +11,7 @@
         android:background="@color/transparent"
         app:leftIcon="@drawable/ic_white_left_back"
         app:lineVisible="false"
-        app:title="时钟样式"
+        app:title="@string/string_clock_style"
         app:titleColor="@color/white" />
 
 

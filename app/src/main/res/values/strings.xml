@@ -1,13 +1,14 @@
 <resources>
     <string name="app_name">Pocket Wuque</string>
 
-
+    <string name="string_is_dis_device_conn_other">Do you want to disconnect the current connection and connect this device?</string>
+    <string name="string_device_has_conn">The current device is already connected!</string>
     <string name="string_scan_filter">Filter rules</string>
     <string name="string_switch_device">Do you want to switch devices?</string>
-    <string name="string_screen_monitor">监控模式</string>
-    <string name="string_screen_writing">打字模式</string>
-    <string name="string_screen_overview">总览图模式</string>
-    <string name="string_screen_default">默认模式</string>
+    <string name="string_screen_monitor">Monitor model</string>
+    <string name="string_screen_writing">Type Stand </string>
+    <string name="string_screen_overview">Overview map mode</string>
+    <string name="string_screen_default">Default mode</string>
     <string name="string_delete_alarm_desc">Do you want to delete the alarm clock?</string>
     <string name="string_unit_minute">min</string>
     <string name="string_not_conn">Not connected</string>
@@ -95,9 +96,9 @@
     <string name="string_fast">Fast</string>
     <string name="string_slowest">Slowest</string>
     <string name="string_custom_speed">Custom speed</string>
-    <string name="string_clock_style">Clock style</string>
+    <string name="string_clock_style">Clock Style</string>
     <string name="string_alarm_clock">Alarm</string>
-    <string name="string_setting_screen_style">screensaver style</string>
+    <string name="string_setting_screen_style">Screensaver Style</string>
     <string name="string_setting_note">Notepad</string>
 
     <string name="string_no_device_added">No device connection</string>
@@ -152,7 +153,7 @@
     <string name="string_retry">Retry</string>
 
 
-    <string name="string_start_write">start writing</string>
+    <string name="string_start_write">Start writing</string>
     <string name="string_title">Title</string>
     <string name="string_default_anim">Default Animation</string>
     <string name="string_selector_cus">Customize</string>

@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/second_theme_color"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
 
     <com.hjq.bar.TitleBar
@@ -23,6 +24,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/secondNoteRecyclerView"
             android:layout_width="match_parent"
+            tools:listitem="@layout/item_second_note_pad_layout"
             android:layout_height="match_parent" />
 
 

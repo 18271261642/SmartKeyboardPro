@@ -1,6 +1,7 @@
 package com.app.smartkeyboard.second
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.bluetooth.le.ScanCallback
@@ -309,7 +310,7 @@ class SecondScanActivity : AppActivity() {
             if(BaseApplication.getBaseApplication().connStatus == ConnStatus.CONNECTED){
                 //判断是否是连接当前的设备
                 if(bean?.bleMac == MmkvUtils.getConnDeviceMac()){
-                    ToastUtils.show("当前设备已经连接!")
+                    ToastUtils.show(resources.getString(R.string.string_device_has_conn))
                     return
                 }
                 val service = BaseApplication.getBaseApplication().connStatusService
@@ -369,7 +370,7 @@ class SecondScanActivity : AppActivity() {
                 if(BaseApplication.getBaseApplication().connStatus == ConnStatus.CONNECTED){
                     //判断是否是连接当前的设备
                     if(bean.bleMac == MmkvUtils.getConnDeviceMac()){
-                        ToastUtils.show("当前设备已经连接!")
+                        ToastUtils.show(resources.getString(R.string.string_device_has_conn))
                         return
                     }else{
                         showConnDialogView(bean,service,false,position)
@@ -383,7 +384,7 @@ class SecondScanActivity : AppActivity() {
                 }
 
                // handlers.sendEmptyMessageDelayed(0x00, 500)
-                showDialog("连接中..")
+                showDialog(resources.getString(R.string.string_upgrade_conning))
                 bean.connStatus = ConnStatus.CONNECTING
                 adapter?.notifyItemChanged(position)
 
@@ -462,7 +463,7 @@ class SecondScanActivity : AppActivity() {
     private fun showConnDialogView(bean: BleBean,service : ConnStatusService,isBind : Boolean,index : Int){
         val dialog = DeleteDeviceDialog(this, com.bonlala.base.R.style.BaseDialogTheme)
         dialog.show()
-        dialog.setTitleTxt("是否断开当前连接，并连接此设备?")
+        dialog.setTitleTxt(resources.getString(R.string.string_is_dis_device_conn_other))
         dialog.setOnCommClickListener(object : OnCommItemClickListener{
             override fun onItemClick(position: Int) {
                 dialog.dismiss()
@@ -473,7 +474,7 @@ class SecondScanActivity : AppActivity() {
                     }else{
                         list?.get(index)?.connStatus = ConnStatus.CONNECTING
                         adapter?.notifyItemChanged(index)
-                        showDialog("连接中..")
+                        showDialog(resources.getString(R.string.string_connecting))
                     }
 
                     handlers.sendEmptyMessage(0x01)
@@ -728,6 +729,7 @@ class SecondScanActivity : AppActivity() {
         super.onBackPressed()
     }
 
+    @SuppressLint("MissingPermission")
     private fun stopScan(){
         bluetoothAdapter?.bluetoothLeScanner?.stopScan(scanCallBack)
     }

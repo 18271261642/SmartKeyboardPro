@@ -54,6 +54,13 @@ class NotePadActivity : AppActivity() {
         secondNoteRecyclerView?.adapter = adapter
 
 
+        adapter?.setOnEditItemClickListener(object : OnCommItemClickListener{
+            override fun onItemClick(position: Int) {
+                list?.get(position)?.let { showDeleteOrUpdate(it) }
+            }
+
+        })
+
         //点击
         adapter?.setOnCommClickListener(object : OnCommItemClickListener{
             override fun onItemClick(position: Int) {
@@ -150,18 +157,56 @@ class NotePadActivity : AppActivity() {
                 )
             }
             if (position == 0) {  //删除
+                deleteDialog(noteB)
+//                val timeLong = noteB.noteTimeLong
+//                val deviceTimeLong = timeLong / 1000 - 946656000L
+//                if (deviceTimeLong != null) {
+//                    BaseApplication.getBaseApplication().bleOperate.deleteIndexNote(deviceTimeLong)
+//                }
+//
+//                DbManager.getInstance().deleteNotebook(noteB.saveTime)
+//                GlobalScope.launch {
+//                    delay(500)
+//                    getAllDbData()
+//                }
+            }
+        }
+        val window = dialog.window
+        val windowLayout = window?.attributes
+        val metrics2: DisplayMetrics = resources.displayMetrics
+        val widthW: Int = metrics2.widthPixels
 
-                val timeLong = noteB.noteTimeLong
+        windowLayout?.width = widthW
+        windowLayout?.gravity = Gravity.BOTTOM
+        window?.attributes = windowLayout
+    }
+
+
+    private fun deleteDialog(bean : NoteBookBean){
+        val dialog = DeleteDeviceDialog(this, com.bonlala.base.R.style.BaseDialogTheme)
+        dialog.show()
+        dialog.setTitleTxt(resources.getString(R.string.string_is_delete_note))
+        dialog.setConfirmAndCancelTxt(resources.getString(R.string.common_confirm), resources.getString(R.string.common_cancel))
+        dialog.setCancelBgColor(Color.parseColor("#16AEA0"))
+        dialog.setConfirmBgColor(Color.parseColor("#F86849"))
+        dialog.setOnCommClickListener { position ->
+            dialog.dismiss()
+            if (position == 0x01) {   //确定
+                val timeLong = bean.noteTimeLong
                 val deviceTimeLong = timeLong / 1000 - 946656000L
                 if (deviceTimeLong != null) {
                     BaseApplication.getBaseApplication().bleOperate.deleteIndexNote(deviceTimeLong)
                 }
 
-                DbManager.getInstance().deleteNotebook(noteB.saveTime)
+                DbManager.getInstance().deleteNotebook(bean.saveTime)
                 GlobalScope.launch {
                     delay(500)
                     getAllDbData()
                 }
+            }
+            if (position == 0) {  //取消
+
+              dialog.dismiss()
             }
         }
         val window = dialog.window
