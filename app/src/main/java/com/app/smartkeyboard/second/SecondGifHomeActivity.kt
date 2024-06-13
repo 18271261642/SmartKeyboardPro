@@ -183,7 +183,7 @@ class SecondGifHomeActivity : AppActivity() {
                     return
                 }
                 showDialog("Share ...")
-               //分享
+                //分享
                 val gifLog = gifStringBuffer.toString()
 
                 val logPath = getExternalFilesDir(null)?.path+"/"

@@ -17,6 +17,7 @@
         app:titleColor="@color/white"
         app:title="@string/string_upload_anim"
         app:lineVisible="false"
+        app:rightTitle="log"
         app:leftIcon="@drawable/ic_white_left_back"/>
 
 
