@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:background="@color/transparent"
         app:titleColor="@color/white"
+        app:lineVisible="false"
         app:leftIcon="@drawable/ic_white_left_back"
         app:title="@string/image_select_title" />
 

@@ -75,7 +75,7 @@ class SecondHomeViewModel : ViewModel() {
 
     //获取天气信息
     fun getWeatherInfo(lifecycleOwner: LifecycleOwner,lat : Double,lng : Double){
-        EasyHttp.get(lifecycleOwner).api("weather/info?location=${String.format("%.2f",lng)},${String.format("%.2f",lat)}").request(object : OnHttpListener<String>{
+        EasyHttp.get(lifecycleOwner).api("weather/info?location=${String.format("%.2f",lat)},${String.format("%.2f",lng)}").request(object : OnHttpListener<String>{
             override fun onHttpSuccess(result: String?) {
                 try {
                     val jsonObject = JSONObject(result)
@@ -101,12 +101,6 @@ class SecondHomeViewModel : ViewModel() {
 
     private fun dealWithWeather(weatherBean : WeatherBean){
         Timber.e("--------bbb="+Gson().toJson(weatherBean))
-
-
-
-
-
-
 
         val logSb = StringBuffer()
         logSb.append(Gson().toJson(weatherBean)+"\n\n\n")
@@ -163,9 +157,14 @@ class SecondHomeViewModel : ViewModel() {
         //日落分 一个byte
         stringBuffer.append(String.format("%02x", DateUtil.getHHmmForMinute(sunsetTime)))
         //风速
-        val wind = HexDump.toByteArrayTwo((weatherBean.windKph.toFloat()*10).toInt())
-        val windStr = HexDump.bytesToString(wind)
-        stringBuffer.append(windStr)
+        if(weatherBean.windKph == null){
+            stringBuffer.append("FF")
+        }else{
+            val wind = HexDump.toByteArrayTwo((weatherBean.windKph.toFloat()*10).toInt())
+            val windStr = HexDump.bytesToString(wind)
+            stringBuffer.append(windStr)
+        }
+
 
 
 
@@ -324,9 +323,14 @@ class SecondHomeViewModel : ViewModel() {
         //日落分 一个byte
         stringBuffer.append(String.format("%02x", DateUtil.getHHmmForMinute(sunsetTime)))
         //风速
-        val wind = HexDump.toByteArrayTwo((weatherBean.windKph.toFloat()*10).toInt())
-        val windStr = HexDump.bytesToString(wind)
-        stringBuffer.append(windStr)
+        if(weatherBean.windKph == null){
+            stringBuffer.append("FF")
+        }else{
+            val wind = HexDump.toByteArrayTwo((weatherBean.windKph.toFloat()*10).toInt())
+            val windStr = HexDump.bytesToString(wind)
+            stringBuffer.append(windStr)
+        }
+
 
         //城市
         val city = weatherBean.address

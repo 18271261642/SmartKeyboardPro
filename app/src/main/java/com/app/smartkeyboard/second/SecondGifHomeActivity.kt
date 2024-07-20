@@ -99,6 +99,12 @@ class SecondGifHomeActivity : AppActivity() {
     private val handlers: Handler = object : Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message) {
             super.handleMessage(msg)
+            if(msg.what == -1){
+                progressDialog?.dismiss()
+                ToastUtils.show("图片解析失败!")
+            }
+
+
             if (msg.what == 0x00) {
                 cancelProgressDialog()
                 val array = msg.obj as ByteArray
@@ -580,7 +586,7 @@ class SecondGifHomeActivity : AppActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        Timber.e("------requestError="+requestCode+" "+resultCode+" "+UCrop.RESULT_ERROR)
+        Timber.e("------onActivityResult="+requestCode+" "+resultCode+" "+UCrop.RESULT_ERROR)
         if (requestCode == UCrop.REQUEST_CROP && resultCode == Activity.RESULT_OK) {
             //裁剪后的图片地址
             val cropFile = File(saveCropPath)
@@ -729,7 +735,7 @@ class SecondGifHomeActivity : AppActivity() {
         BaseApplication.getBaseApplication().connStatus = ConnStatus.IS_SYNC_DIAL
         //stringBuilder.delete(0,stringBuilder.length)
         //showLogTv()
-
+        handlers.sendEmptyMessageDelayed(-1,5000)
         if (isSynGif) {
             startDialToDevice(byteArray, true)
             return
@@ -787,7 +793,7 @@ class SecondGifHomeActivity : AppActivity() {
 
 
     private fun startDialToDevice(imgByteArray: ByteArray, isGIf: Boolean) {
-
+        handlers.removeMessages(-1)
         showProgressDialog("Loading...")
         grbByte = imgByteArray
         Timber.e("--------大小=" + grbByte.size)
