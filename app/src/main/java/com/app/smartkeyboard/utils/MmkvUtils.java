@@ -200,5 +200,6 @@ public class MmkvUtils {
 
     public static int getDeviceType(){
         return (int) getSaveParams(DEVICE_TYPE_KEY,1);
+//      return 2;
     }
 }

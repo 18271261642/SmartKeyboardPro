@@ -6,8 +6,10 @@ import android.os.Message
 import android.widget.Button
 import android.widget.TextView
 import androidx.activity.viewModels
+import androidx.lifecycle.ViewModelProvider
 import com.app.smartkeyboard.action.AppActivity
 import com.app.smartkeyboard.viewmodel.KeyBoardViewModel
+import com.app.smartkeyboard.viewmodel.SecondHomeViewModel
 import com.google.gson.Gson
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -23,6 +25,9 @@ import java.lang.Exception
  */
 class LogActivity : AppActivity() {
 
+    private var sViewModel : SecondHomeViewModel ? = null
+
+
     private var logTv: TextView? = null
 
     private var clearBtn: Button? = null
@@ -35,6 +40,9 @@ class LogActivity : AppActivity() {
     private val stringBuffer = StringBuffer()
 
     private var pingLogTv :TextView ?= null
+
+    private var getWeatherBtn :Button ?= null
+
 
 
     private val handlers : Handler = object : Handler(Looper.myLooper()!!){
@@ -51,21 +59,26 @@ class LogActivity : AppActivity() {
     }
 
     override fun initView() {
+        getWeatherBtn = findViewById(R.id.logGetWeather)
         pingLogTv = findViewById(R.id.pingLogTv)
         updateLogTv = findViewById(R.id.updateLogTv)
         logTv = findViewById(R.id.logTv)
         clearBtn = findViewById(R.id.clearBtn)
         clearBtn?.setOnClickListener {
-            BaseApplication.getBaseApplication().logStr = "--"
-            BaseApplication.getBaseApplication().clearLog()
+            BaseApplication.getInstance().bleManager.clearLog()
             logTv?.text = ""
             updateLogTv?.text = ""
-            startActivity(PingT::class.java)
+
         }
 
         findViewById<Button>(R.id.requestBtn).setOnClickListener {
             // request()
             viewModel.checkRequest(this)
+        }
+
+        getWeatherBtn?.setOnClickListener {
+            //定位
+            sViewModel?.getLocation(this,this)
         }
     }
 
@@ -80,28 +93,16 @@ class LogActivity : AppActivity() {
     }
 
     override fun initData() {
-
-
+        sViewModel = ViewModelProvider(this)[SecondHomeViewModel::class.java]
         // val logStr = BaseApplication.getBaseApplication().bleOperate.log.toString()
 
-        val logStr = BaseApplication.getBaseApplication().logStr
+        val lotStr = BaseApplication.getInstance().bleManager.log
 
-        logTv?.text = logStr
+        logTv?.text = lotStr
 
-        val updateLog = BaseApplication.getBaseApplication().getAppLog()
-        updateLogTv?.text = updateLog
-
-
-        viewModel.logData.observe(this) {
-            updateLogTv?.text = it
+        sViewModel?.weatherLogData?.observe(this){
+            logTv?.text = it
         }
-
-        stringBuffer.delete(0,stringBuffer.length)
-        viewModel.setAppData(this, this)
-        GlobalScope.launch {
-            pingW()
-        }
-
 
     }
 

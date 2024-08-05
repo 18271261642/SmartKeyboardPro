@@ -287,6 +287,8 @@ public class BaseApplication extends BleApplication {
 
     public DeviceTypeConst getDeviceTypeConst() {
         return deviceTypeConst;
+
+//        return DeviceTypeConst.DEVICE_SECOND;
     }
 
 

@@ -44,12 +44,42 @@ public class LocationUtils {
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
+
+        Location lastLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if(lastLocation != null){
+            Geocoder geocoder = new Geocoder(mContext);
+            try {
+                List<Address> addressList = geocoder.getFromLocation(lastLocation.getLatitude(), lastLocation.getLongitude(), 5);
+                if (addressList == null || addressList.size() == 0) {
+                    return;
+                }
+
+                Address add = addressList.get(0);
+                String cityName = add.getLocality();
+                String cityArea = add.getSubLocality();
+                String cityStr = cityName + cityArea;
+                String province = add.getAdminArea();
+
+                String resultStr = cityName + " " + province + " " + add.getCountryName();
+                if (locationAreaListener != null) {
+                    locationAreaListener.backCityStr(resultStr);
+                    locationAreaListener.backLatLon(add.getLatitude(), add.getLongitude());
+                }
+
+                Timber.e("---------city=" + cityArea + " " + cityStr + " " + province);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0.1f, locationListener);
     }
 
 
     public void stopLocation() {
-
+        if(locationManager != null){
+            locationManager.removeUpdates(locationListener);
+        }
     }
 
     private final LocationListener locationListener = new LocationListener() {

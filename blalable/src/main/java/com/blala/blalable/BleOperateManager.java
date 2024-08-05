@@ -216,7 +216,10 @@ public class BleOperateManager {
             public void backWriteData(byte[] data) {
                 //88 00 00 00 00 00 13 3e 00 02 c0 03   00 01 23   054373c2bd97ffffffffffff
                 //88000000000017c1 0002 c0 15 00 01 04 05 43 11 31 e5 92 ff ff ff ff ff ff 00000002
-                Log.e(TAG, "------获取版本=" + Utils.formatBtArrayToString(data));
+               if(data == null)
+                   return;
+               String lotStr =  Utils.formatBtArrayToString(data);
+                Log.e(TAG, "------获取版本=" +lotStr);
                 if (data.length > 19 && data[9] == 2) {
                     String numberStr = String.format("%02x",data[10])+String.format("%02x",data[11]);
 
@@ -233,8 +236,9 @@ public class BleOperateManager {
                     int versionCode = Utils.getIntFromBytes((byte) 0x00,data[12],data[13],data[14]);
 
                     if (onCommBackDataListener != null) {
-                        onCommBackDataListener.onStrDataBack(version,numberStr,versionCode+"");
+                        onCommBackDataListener.onStrDataBack(version,numberStr,versionCode+"",lotStr);
                         onCommBackDataListener.onIntDataBack(new int[]{versionCode,type});
+
                     }
 
                 }

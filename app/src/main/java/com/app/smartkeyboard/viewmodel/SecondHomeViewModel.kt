@@ -5,6 +5,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
 import com.app.smartkeyboard.BaseApplication
 import com.app.smartkeyboard.bean.WeatherBean
+import com.app.smartkeyboard.http.RequestServer
 import com.app.smartkeyboard.listeners.LocationAreaListener
 import com.app.smartkeyboard.utils.BikeUtils
 import com.app.smartkeyboard.utils.DateUtil
@@ -25,6 +26,7 @@ import java.nio.file.WatchEvent
 
 class SecondHomeViewModel : ViewModel() {
 
+    var weatherLogData = SingleLiveEvent<String>()
 
      var weatherStr = SingleLiveEvent<String>()
 
@@ -75,9 +77,13 @@ class SecondHomeViewModel : ViewModel() {
 
     //获取天气信息
     fun getWeatherInfo(lifecycleOwner: LifecycleOwner,lat : Double,lng : Double){
-        EasyHttp.get(lifecycleOwner).api("weather/info?location=${String.format("%.2f",lat)},${String.format("%.2f",lng)}").request(object : OnHttpListener<String>{
+        val api = "weather/info?location=${String.format("%.2f",lng)},${String.format("%.2f",lat)}"
+        EasyHttp.get(lifecycleOwner).api(api).request(object : OnHttpListener<String>{
             override fun onHttpSuccess(result: String?) {
                 try {
+                    val wStr =RequestServer().host+ api+"\n"+result
+                    weatherLogData.postValue(wStr)
+
                     val jsonObject = JSONObject(result)
                     if(jsonObject.getInt("code") == 200){
                         val data = jsonObject.getString("data")
@@ -92,7 +98,8 @@ class SecondHomeViewModel : ViewModel() {
             }
 
             override fun onHttpFail(e: Exception?) {
-
+                val wStr =RequestServer().host+ api+"\n"+e?.message
+                weatherLogData.postValue(wStr)
             }
 
         })

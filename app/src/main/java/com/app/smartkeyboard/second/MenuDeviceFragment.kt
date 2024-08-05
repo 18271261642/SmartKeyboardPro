@@ -6,9 +6,11 @@ import android.net.Uri
 import android.util.DisplayMetrics
 import android.view.Gravity
 import android.view.View
+import android.view.View.OnLongClickListener
 import android.widget.TextView
 import androidx.fragment.app.viewModels
 import com.app.smartkeyboard.BaseApplication
+import com.app.smartkeyboard.LogActivity
 import com.app.smartkeyboard.R
 import com.app.smartkeyboard.action.TitleBarFragment
 import com.app.smartkeyboard.adapter.OnCommItemClickListener
@@ -93,6 +95,14 @@ class MenuDeviceFragment : TitleBarFragment<SecondHomeActivity>(){
 //            }
 //            startActivity(SecondScanActivity::class.java)
 //        }
+
+        findViewById<ShapeConstraintLayout>(R.id.menuDeviceAboutAppLayout).setOnLongClickListener(object : OnLongClickListener{
+            override fun onLongClick(v: View?): Boolean {
+                startActivity(LogActivity::class.java)
+                return true
+            }
+
+        })
 
 
         findViewById<ShapeTextView>(R.id.deviceUnBindTv).setOnClickListener {

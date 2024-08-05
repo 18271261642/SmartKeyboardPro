@@ -2,6 +2,7 @@ package com.app.smartkeyboard.second
 
 import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Color
@@ -11,8 +12,11 @@ import android.os.Looper
 import android.os.Message
 import android.util.DisplayMetrics
 import android.view.Gravity
+import android.view.View
+import android.view.View.OnLongClickListener
 import android.widget.TextView
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.app.smartkeyboard.BaseApplication
 import com.app.smartkeyboard.R
@@ -87,8 +91,16 @@ class AboutDeviceActivity : AppActivity() {
         aboutDeviceModelTv = findViewById(R.id.aboutDeviceModelTv)
         aboutDeviceVersionTv = findViewById(R.id.aboutDeviceVersionTv)
 
+        findViewById<ShapeConstraintLayout>(R.id.aboutUpdateLayout).setOnLongClickListener(object : OnLongClickListener{
+            override fun onLongClick(v: View?): Boolean {
+                showVersion(true)
+                return true
+            }
+
+        })
+
         findViewById<ShapeConstraintLayout>(R.id.aboutUpdateLayout).setOnClickListener {
-            showVersion()
+            showVersion(false)
         }
 
         findViewById<ShapeConstraintLayout>(R.id.aboutDeviceNameLayout).setOnClickListener {
@@ -146,12 +158,12 @@ class AboutDeviceActivity : AppActivity() {
 //        aboutDeviceNameTv?.text = name
 //        aboutDeviceModelTv?.text = name+" "+productName
 
-        showVersion()
+        showVersion(false)
     }
 
 
     val stringBuffer = StringBuilder()
-    private fun showVersion(){
+    private fun showVersion(showLog : Boolean){
         stringBuffer.delete(0,stringBuffer.length)
         BaseApplication.getBaseApplication().bleOperate.getDeviceVersionData(object :
             OnCommBackDataListener {
@@ -175,6 +187,10 @@ class AboutDeviceActivity : AppActivity() {
                     viewModel.checkVersion(this@AboutDeviceActivity,value[2]!!.toInt(),value[1].toString())
                 }
 
+                if(showLog){
+                    value[3]?.let { showLogDialog(it) }
+                }
+
             }
 
         })
@@ -191,13 +207,13 @@ class AboutDeviceActivity : AppActivity() {
                 if(!BaseApplication.getBaseApplication().isActivityScan){
                     BaseApplication.getBaseApplication().bleOperate.stopScanDevice()
                 }
-                showVersion()
+                showVersion(false)
 
                 setDialogTxtShow(resources.getString(R.string.string_upgrade_success))
             }
             if(action == BleConstant.BLE_DIS_CONNECT_ACTION){
                 ToastUtils.show(resources.getString(R.string.string_conn_disconn))
-                showVersion()
+                showVersion(false)
             }
 
         }
@@ -309,5 +325,23 @@ class AboutDeviceActivity : AppActivity() {
         window?.attributes = windowLayout
     }
 
+
+    private fun showLogDialog(log : String){
+        val dialog = AlertDialog.Builder(this)
+            .setMessage(log)
+            .setPositiveButton(resources.getString(R.string.string_cancel),object : DialogInterface.OnClickListener{
+                override fun onClick(dialog: DialogInterface?, which: Int) {
+                    dialog?.dismiss()
+                }
+
+            })
+            .setNegativeButton(resources.getString(R.string.string_confirm),object : DialogInterface.OnClickListener{
+                override fun onClick(dialog: DialogInterface?, which: Int) {
+                    dialog?.dismiss()
+                }
+
+            })
+        dialog.create().show()
+    }
 
 }

@@ -84,25 +84,8 @@ public class BleManager {
         this.interfaceManager.onBleBackListener = onBleBackListener;
     }
 
-
     public void setOnSendWriteListener(OnSendWriteDataListener onSendWriteListener){
         this.interfaceManager.onSendWriteDataListener = onSendWriteListener;
-    }
-
-    //实时心率数据
-    public void setOnRealTimeDataListener(OnRealTimeDataListener onRealTimeDataListener) {
-        this.interfaceManager.onRealTimeDataListener = onRealTimeDataListener;
-    }
-
-
-    /**测量数据返回**/
-    public void setOnMeasureDataListener(OnMeasureDataListener onMeasureDataListener){
-        this.interfaceManager.onMeasureDataListener = onMeasureDataListener;
-    }
-
-    /**锻炼数据**/
-    public void setOnExerciseDataListener(OnExerciseDataListener onExerciseDataListener){
-        this.interfaceManager.onExerciseDataListener = onExerciseDataListener;
     }
 
     public static BleManager getInstance(Context context){
@@ -305,7 +288,7 @@ public class BleManager {
     private synchronized void connBleDevice(final String bleMac, final String bleName, final ConnStatusListener connectResponse){
         BleSpUtils.put(mContext,SAVE_BLE_MAC_KEY,bleMac);
         clearLog();
-        stringBuffer.append("连接"+System.currentTimeMillis()/1000+"\n\n");
+        stringBuffer.append("connect device : "+System.currentTimeMillis()/1000+"\n\n");
         int status = bluetoothClient.getConnectStatus(bleMac);
         sendCommBroadcast("ble_action",0);
         Log.e(TAG,"************连接处="+bleMac+"--连接状态="+status);
@@ -321,16 +304,12 @@ public class BleManager {
                 Log.e(TAG,"-----onResponse="+code+"\n"+new Gson().toJson(serviceList));
 
                 if(code == 0){  //连接成功了，开始设置通知
-                    stringBuffer.append("连接成功"+"\n\n");
+                    stringBuffer.append("connect success"+"\n\n");
                     sendCommBroadcast("ble_action",0);
                     //判断是否是OTA升级状态，是OTA状态不保存地址
                     (new Handler(Looper.getMainLooper())).postDelayed(new Runnable() {
                         public void run() {
-
-                            //实时数据返回，主动通道
-
                             setNotifyData(bleMac,bleConstant.SERVICE_UUID,bleConstant.READ_UUID,connectResponse);
-
                         }
                     }, 2000L);
                     connectResponse.connStatus(code);
@@ -371,45 +350,12 @@ public class BleManager {
             public void onNotify(UUID uuid, UUID uuid1, byte[] bytes) {
                 String notifyStr = uuid1.toString()+" "+Utils.formatBtArrayToString(bytes);
                 Log.e(TAG,"------写入数据返回="+notifyStr);
-                stringBuffer.append("数据返回:"+notifyStr+"\n\n");
+                stringBuffer.append("notify hex : "+notifyStr+"\n\n");
                 sendCommBroadcast("ble_action",0);
                 if(interfaceManager.writeBackDataListener != null){
                     interfaceManager.writeBackDataListener.backWriteData(bytes);
                 }
 
-                //锻炼结束后手表返回 011701
-                if(bytes.length == 3 && bytes[0] == 1 && bytes[1] == 23 && bytes[2] == 1){
-                    sendCommBroadcast(BleConstant.BLE_COMPLETE_EXERCISE_ACTION,0);
-                }
-
-                //0151ff 测量手表结束后返回 心率
-
-                //023cffff 血压手表结束测量
-
-
-
-                if(bytes.length == 3 && bytes[0] ==1 && (bytes[1]& 0xff) == 0x15 && bytes[2] == 1 ){    //拍照
-                    sendCommBroadcast(0x01);
-                }
-
-                if(bytes.length == 3 && bytes[0] == 1 && (bytes[1]& 0xff) == 81){   //测量心率返回
-                    if(interfaceManager.onMeasureDataListener != null)
-                        interfaceManager.onMeasureDataListener.onMeasureHeart(bytes[2] & 0xff,System.currentTimeMillis());
-                    handler.sendEmptyMessageDelayed(0x00,1500);
-                }
-
-                if(bytes.length == 4 && (bytes[0] & 0xff) == 2 && (bytes[1] & 0xff) == 60){ //测量血压返回
-                    if(interfaceManager.onMeasureDataListener != null)
-                        interfaceManager.onMeasureDataListener.onMeasureBp(bytes[2] & 0xff ,bytes[3] & 0xff,System.currentTimeMillis());
-                    handler.sendEmptyMessageDelayed(0x00,1500);
-                }
-
-                // 013e60 血氧
-                if(bytes.length == 3 && bytes[0] == 1 && (bytes[1]& 0xff) == 62){
-                    if(interfaceManager.onMeasureDataListener != null)
-                        interfaceManager.onMeasureDataListener.onMeasureSpo2(bytes[2] & 0xff,System.currentTimeMillis());
-                    handler.sendEmptyMessageDelayed(0x00,1500);
-                }
             }
 
             @Override
@@ -446,7 +392,7 @@ public class BleManager {
         String bleMac = (String) BleSpUtils.get(mContext,SAVE_BLE_MAC_KEY,"");
         if(TextUtils.isEmpty(bleMac))
             return;
-        stringBuffer.append("写入数据:"+writeStr+"\n\n");
+        stringBuffer.append("write hex: "+writeStr+"\n\n");
         sendCommBroadcast("ble_action",0);
         interfaceManager.setWriteBackDataListener(writeBackDataListener);
         bluetoothClient.write(bleMac,bleConstant.SERVICE_UUID,bleConstant.WRITE_UUID,data,bleWriteResponse);
