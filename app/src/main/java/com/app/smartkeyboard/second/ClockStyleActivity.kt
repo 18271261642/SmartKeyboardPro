@@ -63,7 +63,7 @@ class ClockStyleActivity : AppActivity(){
     }
 
 
-    private val imgArray = arrayListOf<Int>(R.mipmap.ic_c_b1,R.mipmap.ic_c_b2,R.mipmap.ic_c_b3,R.mipmap.ic_c_b4)
+    private val imgArray = arrayListOf<Int>(R.mipmap.ic_c_b1,R.mipmap.ic_c_b4,R.mipmap.ic_c_b2,R.mipmap.ic_c_b3)
     private fun showClick(index : Int){
         this.defaultIndex = index
         Timber.e("------------index="+index)
@@ -72,7 +72,7 @@ class ClockStyleActivity : AppActivity(){
         cbImg3?.visibility = if(index == 2) View.VISIBLE else View.INVISIBLE
         cbImg4?.visibility = if(index == 3) View.VISIBLE else View.INVISIBLE
         clockShowImg?.setImageResource(imgArray[index])
-
+        BaseApplication.getBaseApplication().bleOperate.setScreenStyleOrClockStyle(true,defaultIndex)
 
     }
 
