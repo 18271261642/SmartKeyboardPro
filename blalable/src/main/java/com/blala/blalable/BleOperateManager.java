@@ -117,7 +117,7 @@ public class BleOperateManager {
                 } else {
                     //一个4K包里面的内容发送完了
                     Log.e(TAG, "---------一个4K包发送全部发送万了");
-                    handler.sendEmptyMessageDelayed(0x00, 50);
+                    handler.sendEmptyMessageDelayed(0x00, 40);
                 }
             }
         }
@@ -619,7 +619,7 @@ public class BleOperateManager {
 
             }
         });
-        handler.sendEmptyMessageDelayed(0x01, 40);
+        handler.sendEmptyMessageDelayed(0x01, 30);
     }
 
 

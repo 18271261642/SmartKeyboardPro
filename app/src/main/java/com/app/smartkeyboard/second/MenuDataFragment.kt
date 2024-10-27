@@ -27,6 +27,7 @@ import com.blala.blalable.listener.OnUseTimeListener
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 /**
  * 数据页面
@@ -130,7 +131,7 @@ class MenuDataFragment : TitleBarFragment<SecondHomeActivity>() {
         homeTimeStateTv?.text =
             TimeUtils.getTimeByNow(attachActivity) + " " + MmkvUtils.getConnDeviceName()
         //homeTempView?.setBatteryValue(88)
-
+       // Timber.e("---------connName="+MmkvUtils.getConnDeviceName())
     }
 
 

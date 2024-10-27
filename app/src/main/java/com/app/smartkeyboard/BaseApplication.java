@@ -283,6 +283,10 @@ public class BaseApplication extends BleApplication {
         if(code == 2){
             deviceTypeConst = DeviceTypeConst.DEVICE_SECOND;
         }
+        if(code == 3){
+            deviceTypeConst = DeviceTypeConst.DEVICE_THIRD;
+        }
+
     }
 
     public DeviceTypeConst getDeviceTypeConst() {

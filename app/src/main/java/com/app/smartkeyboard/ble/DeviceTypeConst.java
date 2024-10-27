@@ -8,7 +8,8 @@ public enum DeviceTypeConst {
 
     DEVICE_FIRST,
 
-    DEVICE_SECOND;
+    DEVICE_SECOND,
+    DEVICE_THIRD;
 
     DeviceTypeConst() {
 

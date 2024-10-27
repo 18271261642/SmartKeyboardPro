@@ -111,6 +111,10 @@ class MenuSettingFragment : TitleBarFragment<SecondHomeActivity>() {
             settingAlarmLayout?.visibility = View.GONE
         }
 
+        if(BaseApplication.getBaseApplication().deviceTypeConst == DeviceTypeConst.DEVICE_THIRD){
+            settingNoteLayout?.visibility = View.GONE
+        }
+
 
     }
 
