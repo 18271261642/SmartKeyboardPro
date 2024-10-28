@@ -133,7 +133,11 @@ class SecondHomeActivity : AppActivity() {
         intentFilter.addAction(BleConstant.BLE_SCAN_COMPLETE_ACTION)
         intentFilter.addAction(BleConstant.BLE_START_SCAN_ACTION)
         intentFilter.addAction("weather_action")
-        registerReceiver(broadcastReceiver,intentFilter)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            registerReceiver(broadcastReceiver,intentFilter,Context.RECEIVER_EXPORTED)
+        }else{
+            registerReceiver(broadcastReceiver,intentFilter);
+        }
 
 //        val localBroadcastManager : LocalBroadcastManager = LocalBroadcastManager.getInstance(this)
 //        localBroadcastManager.registerReceiver(broadcastReceiver,intentFilter)

@@ -174,7 +174,11 @@ class SecondScanActivity : AppActivity() {
         intentFilter.addAction(BleConstant.BLE_SCAN_COMPLETE_ACTION)
         intentFilter.addAction(BleConstant.BLE_START_SCAN_ACTION)
         intentFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED)
-        registerReceiver(broadcastReceiver,intentFilter)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            registerReceiver(broadcastReceiver,intentFilter,Context.RECEIVER_EXPORTED)
+        }else{
+            registerReceiver(broadcastReceiver,intentFilter)
+        }
 
         val bleManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
         bluetoothAdapter = bleManager.adapter

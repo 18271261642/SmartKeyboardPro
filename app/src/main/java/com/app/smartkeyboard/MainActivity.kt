@@ -87,7 +87,11 @@ class MainActivity : AppActivity() {
         intentFilter.addAction(BleConstant.BLE_DIS_CONNECT_ACTION)
         intentFilter.addAction(BleConstant.BLE_SCAN_COMPLETE_ACTION)
         intentFilter.addAction(BleConstant.BLE_START_SCAN_ACTION)
-        registerReceiver(broadcastReceiver,intentFilter)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            registerReceiver(broadcastReceiver,intentFilter,Context.RECEIVER_EXPORTED)
+        }else{
+            registerReceiver(broadcastReceiver,intentFilter)
+        }
 //        if (Build.VERSION.SDK_INT >= 33) {
 //            XXPermissions.with(this).permission(arrayOf(Manifest.permission.POST_NOTIFICATIONS)).request { permissions, all ->  }
 //        }

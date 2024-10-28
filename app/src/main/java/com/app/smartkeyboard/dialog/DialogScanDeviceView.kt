@@ -115,11 +115,12 @@ class DialogScanDeviceView : AppCompatDialog {
             }
 
             override fun onDeviceFounded(p0: SearchResult) {
-                if(p0.getScanRecord() == null || p0.getScanRecord().isEmpty())
+                p0.scanRecord
+                if(p0.scanRecord == null || p0.scanRecord.isEmpty())
                     return
                // Timber.e("--------扫描="+p0.name+" "+Utils.formatBtArrayToString(p0.getScanRecord()))
 
-                    val recordStr = Utils.formatBtArrayToString(p0.getScanRecord())
+                    val recordStr = Utils.formatBtArrayToString(p0.scanRecord)
                     val bleName = p0.name
 
                 if(BikeUtils.isEmpty(bleName) || bleName.equals("NULL") || BikeUtils.isEmpty(p0.address))

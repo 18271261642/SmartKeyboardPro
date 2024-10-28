@@ -170,13 +170,13 @@ public class ConnStatusService extends Service {
                     return;
                 if(isNeedReconnect && !BikeUtils.isEmpty(mac) && searchResult.getAddress().equals(mac)){
                    // BleOperateManager.getInstance().stopScanDevice();
-                    Timber.e("-------扫描到了，开始连接="+mac+" "+(searchResult.getScanRecord() ==null));
-                    if(searchResult.getScanRecord() != null){
-                        Timber.e("-------ssss="+Utils.formatBtArrayToString(searchResult.getScanRecord()));
+                    Timber.e("-------扫描到了，开始连接="+mac+" "+(searchResult.scanRecord ==null));
+                    if(searchResult.scanRecord != null){
+                        Timber.e("-------ssss="+Utils.formatBtArrayToString(searchResult.scanRecord));
                     }
                     handler.sendEmptyMessage(0x00);
                     isScanDevice = true;
-                    connDevice(bleName,mac,searchResult.getScanRecord());
+                    connDevice(bleName,mac,searchResult.scanRecord);
 
                 }
             }

@@ -6,13 +6,13 @@ plugins {
 
 android {
     namespace 'com.app.smartkeyboard'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.app.smartkeyboard"
         minSdk 21
-        targetSdk 33
-        versionCode 35
+        targetSdk 34
+        versionCode 36
         versionName "V1.0.8"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

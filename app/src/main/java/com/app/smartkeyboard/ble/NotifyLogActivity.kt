@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Build
 import android.view.View
 import android.widget.TextView
 import com.app.smartkeyboard.R
@@ -45,7 +46,11 @@ class NotifyLogActivity : AppActivity() {
 
     override fun initData() {
         val intentFilter = IntentFilter("com.app.freya.ble.notify")
-        registerReceiver(broadcastReceiver,intentFilter)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            registerReceiver(broadcastReceiver,intentFilter,Context.RECEIVER_EXPORTED)
+        }else{
+            registerReceiver(broadcastReceiver,intentFilter)
+        }
     }
 
     override fun onDestroy() {
