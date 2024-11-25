@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="wrap_content">
+
+
+
+    <ImageView
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:id="@+id/itemGifHistoryImg"
+        android:layout_gravity="center"
+        android:layout_width="@dimen/dp_130"
+        android:layout_height="@dimen/dp_130"
+
+        android:src="@mipmap/ic_second_add_gif"/>
+
+
+    <ImageView
+        android:id="@+id/itemGifDeleteImg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_item_clear_img"
+        app:layout_constraintRight_toRightOf="@id/itemGifHistoryImg"
+        app:layout_constraintTop_toTopOf="@id/itemGifHistoryImg"/>
+
+    <TextView
+        android:id="@+id/itemGifHistoryTimeTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:text="2024-11-24 21:01:10"
+        android:layout_marginTop="@dimen/dp_10"
+        android:textColor="@color/white"
+        android:textSize="@dimen/sp_17"
+        app:layout_constraintTop_toBottomOf="@id/itemGifHistoryImg"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

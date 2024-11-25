@@ -468,42 +468,46 @@ class SecondScanActivity : AppActivity() {
         val dialog = DeleteDeviceDialog(this, com.bonlala.base.R.style.BaseDialogTheme)
         dialog.show()
         dialog.setTitleTxt(resources.getString(R.string.string_is_dis_device_conn_other))
-        dialog.setOnCommClickListener(object : OnCommItemClickListener{
-            override fun onItemClick(position: Int) {
-                dialog.dismiss()
-                if(position == 0x01){   //确定
-                    if(isBind){
-                        bindList?.get(index)?.connStatus = ConnStatus.CONNECTING
-                        bindAdapter?.notifyItemChanged(index)
-                    }else{
-                        list?.get(index)?.connStatus = ConnStatus.CONNECTING
-                        adapter?.notifyItemChanged(index)
-                        showDialog(resources.getString(R.string.string_connecting))
-                    }
-
-                    handlers.sendEmptyMessage(0x01)
-                    handlers.postDelayed(Runnable {
-
-                        service.connDeviceBack(
-                            bean.bleName, bean.bleMac
-                        ) { mac, status ->
-                            hideDialog()
-
-                            DbManager.getInstance().saveUserBindDevice(bean.bleName,bean.bleMac,BikeUtils.getFormatDate(System.currentTimeMillis(),"yyyy-MM-dd HH:mm:ss"))
-                            MmkvUtils.saveProductNumberCode(bean.productNumber)
-                            MmkvUtils.saveConnDeviceMac(mac)
-                            MmkvUtils.saveConnDeviceName(bean.bleName)
-                            BaseApplication.getBaseApplication().connStatus = ConnStatus.CONNECTED
-                            viewModel?.getLocation(this@SecondScanActivity,this@SecondScanActivity)
-                            getDeviceType()
-                            dealScanDevice()
-                        }
-                    },2000)
-
+        dialog.setOnCommClickListener { position ->
+            dialog.dismiss()
+            if (position == 0x01) {   //确定
+                if (isBind) {
+                    bindList?.get(index)?.connStatus = ConnStatus.CONNECTING
+                    bindAdapter?.notifyItemChanged(index)
+                } else {
+                    list?.get(index)?.connStatus = ConnStatus.CONNECTING
+                    adapter?.notifyItemChanged(index)
+                    showDialog(resources.getString(R.string.string_connecting))
                 }
-            }
 
-        })
+                handlers.sendEmptyMessage(0x01)
+                handlers.postDelayed(Runnable {
+
+                    service.connDeviceBack(
+                        bean.bleName, bean.bleMac
+                    ) { mac, status ->
+                        hideDialog()
+
+                        DbManager.getInstance().saveUserBindDevice(
+                            bean.bleName,
+                            bean.bleMac,
+                            BikeUtils.getFormatDate(
+                                System.currentTimeMillis(),
+                                "yyyy-MM-dd HH:mm:ss"
+                            )
+                        )
+                        MmkvUtils.saveProductNumberCode(bean.productNumber)
+                        MmkvUtils.saveConnDeviceMac(mac)
+                        MmkvUtils.saveConnDeviceName(bean.bleName)
+                        BaseApplication.getBaseApplication().connStatus = ConnStatus.CONNECTED
+                        viewModel?.getLocation(this@SecondScanActivity, this@SecondScanActivity)
+                        getDeviceType()
+                        dealScanDevice()
+                    }
+                }, 2000)
+
+            }
+        }
         val window = dialog.window
         val windowLayout = window?.attributes
         val metrics2: DisplayMetrics = resources.displayMetrics

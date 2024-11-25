@@ -19,10 +19,17 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.app.smartkeyboard.BaseApplication
 import com.app.smartkeyboard.R
 import com.app.smartkeyboard.action.AppActivity
+import com.app.smartkeyboard.adapter.GifHistoryAdapter
 import com.app.smartkeyboard.adapter.OnCommItemClickListener
+import com.app.smartkeyboard.adapter.OnCommMenuClickListener
+import com.app.smartkeyboard.bean.DbManager
+import com.app.smartkeyboard.bean.GifHistoryBean
 import com.app.smartkeyboard.ble.ConnStatus
 import com.app.smartkeyboard.ble.DeviceTypeConst
 import com.app.smartkeyboard.dialog.DeleteDeviceDialog
@@ -33,11 +40,13 @@ import com.app.smartkeyboard.img.ImageSelectActivity
 import com.app.smartkeyboard.utils.BikeUtils
 import com.app.smartkeyboard.utils.BitmapAndRgbByteUtil
 import com.app.smartkeyboard.utils.CalculateUtils
+import com.app.smartkeyboard.utils.FileUtils
 import com.app.smartkeyboard.utils.GetJsonDataUtil
 import com.app.smartkeyboard.utils.ImageUtils
 import com.app.smartkeyboard.utils.ImgUtil
 import com.app.smartkeyboard.utils.MmkvUtils
 import com.app.smartkeyboard.utils.ThreadUtils
+import com.app.smartkeyboard.viewmodel.GifViewModel
 import com.blala.blalable.Utils
 import com.blala.blalable.keyboard.DialCustomBean
 import com.blala.blalable.keyboard.KeyBoardConstant
@@ -66,6 +75,12 @@ import java.io.File
 class SecondGifHomeActivity : AppActivity() {
 
     val gifStringBuffer = StringBuffer()
+
+    private var gifViewModel : GifViewModel ?= null
+
+    private var gifHomeRecyclerView : RecyclerView ?= null
+    private var gifHistoryAdapter : GifHistoryAdapter ?= null
+    private var gifHistoryList = arrayListOf<GifHistoryBean>()
 
 
     private var gifHomeTitleBar : TitleBar ?= null
@@ -108,8 +123,6 @@ class SecondGifHomeActivity : AppActivity() {
             if (msg.what == 0x00) {
                 cancelProgressDialog()
                 val array = msg.obj as ByteArray
-                val path = getExternalFilesDir(null)?.path
-
                 // FileU.getFile(array,path,"gif.bin")
                 setDialToDevice(array)
 
@@ -122,9 +135,8 @@ class SecondGifHomeActivity : AppActivity() {
             }
 
             if (msg.what == 0x08) {
-                val log = msg.obj as String
+//                val log = msg.obj as String
                 // gifLogTv?.text = log
-
             }
 
 
@@ -132,7 +144,7 @@ class SecondGifHomeActivity : AppActivity() {
                 hideDialog()
                 val logPath = getExternalFilesDir(null)?.path
                 val name = BikeUtils.getCurrDate()+".json"
-                val file = logPath+"/"+name
+                val file = "$logPath/$name"
                 GetJsonDataUtil().openFileThirdApp(this@SecondGifHomeActivity,file)
             }
 
@@ -144,6 +156,22 @@ class SecondGifHomeActivity : AppActivity() {
     }
 
     override fun initView() {
+        isSecondDevice= BaseApplication.getBaseApplication().deviceTypeConst==DeviceTypeConst.DEVICE_SECOND || BaseApplication.getBaseApplication().deviceTypeConst==DeviceTypeConst.DEVICE_THIRD
+        gifHomeRecyclerView = findViewById(R.id.gifHomeRecyclerView)
+        val gridLayoutManager = GridLayoutManager(this,2)
+        gridLayoutManager.orientation = GridLayoutManager.VERTICAL
+        gifHomeRecyclerView?.layoutManager = gridLayoutManager
+        val defaultBean = GifHistoryBean()
+        defaultBean.isDefaultAni = true
+        gifHistoryList.add(defaultBean)
+        val selectBean = GifHistoryBean()
+        selectBean.fileUrl = "+"
+        selectBean.deviceType = if(isSecondDevice) 2 else 1
+        selectBean.isDefaultAni = false
+        gifHistoryList.add(selectBean)
+        gifHistoryAdapter = GifHistoryAdapter(this,gifHistoryList)
+        gifHomeRecyclerView?.adapter = gifHistoryAdapter
+
         gifHomeTitleBar = findViewById(R.id.gifHomeTitleBar)
         secondDefaultAnimationImgView = findViewById(R.id.secondDefaultAnimationImgView)
         secondGifCusLayout = findViewById(R.id.secondGifCusLayout)
@@ -158,6 +186,39 @@ class SecondGifHomeActivity : AppActivity() {
         secondGifDormancyLayout?.setOnClickListener(this)
         secondCusSpeedLayout?.setOnClickListener(this)
         secondDefaultAnimationImgView?.setOnClickListener(this)
+
+
+        gifHistoryAdapter?.setOnItemClick(object : OnCommMenuClickListener{
+            override fun onItemClick(position: Int) { //菜单
+               val bean = gifHistoryList[position]
+                if(bean.fileUrl == "+"){ //添加
+                    showPhotoDialog()
+                    return
+                }
+                if(bean.isDefaultAni){  //默认动画
+                    if (BaseApplication.getBaseApplication().connStatus != ConnStatus.CONNECTED) {
+                        return
+                    }
+                    // BaseApplication.getBaseApplication().bleOperate.setLocalKeyBoardDial()
+                    val array = byteArrayOf(0x09, 0x01, 0x00)
+                    val resultArray = Utils.getFullPackage(array)
+                    Timber.e("----------array="+Utils.formatBtArrayToString(resultArray))
+                    BaseApplication.getBaseApplication().bleOperate.writeCommonByte(resultArray
+                    ) { data -> Timber.e("-------result=" + Utils.formatBtArrayToString(data)) }
+                    return
+                }
+                showUploadDialog(File(bean.fileUrl),position)
+            }
+
+            //删除
+            override fun onChildItemClick(position: Int) {
+                val bean = gifHistoryList[position]
+                val file = File(bean.fileUrl)
+                showDeleteDialog(file,position)
+            }
+
+        })
+
 
         //默认动画
         findViewById<LinearLayout>(R.id.secondDefaultAnimationLayout).setOnClickListener {
@@ -203,66 +264,89 @@ class SecondGifHomeActivity : AppActivity() {
     }
 
     override fun initData() {
-        isSecondDevice= BaseApplication.getBaseApplication().deviceTypeConst==DeviceTypeConst.DEVICE_SECOND
+        gifViewModel = ViewModelProvider(this).get(GifViewModel::class.java)
+
         cropImgPath = this.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath
 
-        //判断SD卡中是否有选择过的图片
-        val saveCropFile = File(cropImgPath)
-        Timber.e("-----目录=" + saveCropFile.path)
-        val array = saveCropFile.listFiles()
-        if (array != null && array.isNotEmpty()) {
 
-            val isSecond = BaseApplication.getBaseApplication().deviceTypeConst == DeviceTypeConst.DEVICE_SECOND
+        gifViewModel?.gifDbData?.observe(this){
+            if(it == null){
 
-            //判断尺寸
-            val firstFilePath = array.get(0).path
-            Timber.e("-----firstPath="+firstFilePath)
-            val file = File(firstFilePath)
-            if(file == null || !file.exists()){
-                return
+                return@observe
             }
-           if(firstFilePath.contains("jpg")){
-               val imgBitmap = BitmapFactory.decodeFile(firstFilePath)
-               val width = imgBitmap.width
-               if(isSecond){
-                   if(width!= 390){
-                       file.delete()
-                       loadDefaultImg()
-                   }
-               }else{
-                   if(width != 320){
-                       file.delete()
-                       loadDefaultImg()
-                   }
-               }
-              // return
-           }
-
-            if(firstFilePath.contains("gif")){
-                val width = ImageUtils.getGifWidth(file)
-                if(isSecond){
-                    if(width != 390){
-                        file.delete()
-                        loadDefaultImg()
-                    }
-                }else{
-                    if(width != 320){
-                        file.delete()
-                        loadDefaultImg()
-                    }
-                }
+            if(it.size==20){
+                gifHistoryList.removeAt(1)
+                gifHistoryList.addAll(it)
+                gifHistoryAdapter?.notifyDataSetChanged()
+                return@observe
             }
-
-            if(isSecond){
-                Glide.with(this).load(firstFilePath)
-                    .transform(MultiTransformation(CenterCrop(), CircleCrop())).skipMemoryCache(false).into(secondCusGifImageView!!)
-            }else{
-                Glide.with(this).load(firstFilePath)
-                   .into(secondCusGifImageView!!)
+            it.forEachIndexed { index, gifHistoryBean ->
+                gifHistoryList.add(index+1,gifHistoryBean)
             }
-
-
+            gifHistoryAdapter?.notifyDataSetChanged()
         }
+
+        //查询数据库中的数据
+        gifViewModel?.queryDeviceTypeGifData(isSecondDevice)
+
+
+
+        //判断SD卡中是否有选择过的图片
+//        val saveCropFile = File(cropImgPath)
+//        Timber.e("-----目录=" + saveCropFile.path)
+//        val array = saveCropFile.listFiles()
+//        if (array != null && array.isNotEmpty()) {
+//
+//            val isSecond = BaseApplication.getBaseApplication().deviceTypeConst == DeviceTypeConst.DEVICE_SECOND
+//
+//            //判断尺寸
+//            val firstFilePath = array[0].path
+//            Timber.e("-----firstPath="+firstFilePath)
+//            val file = File(firstFilePath)
+//            if(file == null || !file.exists()){
+//                return
+//            }
+//           if(firstFilePath.contains("jpg")){
+//               val imgBitmap = BitmapFactory.decodeFile(firstFilePath)
+//               val width = imgBitmap.width
+//               if(isSecond){
+//                   if(width!= 390){
+//                       file.delete()
+//                       loadDefaultImg()
+//                   }
+//               }else{
+//                   if(width != 320){
+//                       file.delete()
+//                       loadDefaultImg()
+//                   }
+//               }
+//              // return
+//           }
+//
+//            if(firstFilePath.contains("gif")){
+//                val width = ImageUtils.getGifWidth(file)
+//                if(isSecond){
+//                    if(width != 390){
+//                        file.delete()
+//                        loadDefaultImg()
+//                    }
+//                }else{
+//                    if(width != 320){
+//                        file.delete()
+//                        loadDefaultImg()
+//                    }
+//                }
+//            }
+//
+//            if(isSecond){
+//                Glide.with(this).load(firstFilePath)
+//                    .transform(MultiTransformation(CenterCrop(), CircleCrop())).skipMemoryCache(false).into(secondCusGifImageView!!)
+//            }else{
+//                Glide.with(this).load(firstFilePath)
+//                   .into(secondCusGifImageView!!)
+//            }
+//
+//        }
     }
 
 
@@ -303,7 +387,7 @@ class SecondGifHomeActivity : AppActivity() {
                 Timber.e("-----目录=" + saveCropFile.path)
                 val array = saveCropFile.listFiles()
                 if (array != null && array.size > 0) {
-                    showUploadDialog(array.get(0))
+                  //  showUploadDialog(array.get(0))
                 } else {
                     showPhotoDialog()
                 }
@@ -336,31 +420,37 @@ class SecondGifHomeActivity : AppActivity() {
     }
 
 
-    private fun showUploadDialog(imagFile: File) {
+    private fun showUploadDialog(imagFile: File,index : Int) {
         val isGif = imagFile.name.contains("gif")
         val dialog = UploadAnimationDialog(this, com.bonlala.base.R.style.BaseDialogTheme)
         dialog.show()
         dialog.setVisibility(isGif)
-        dialog.setOnCommClickListener(object : OnCommItemClickListener {
-            override fun onItemClick(position: Int) {
-                dialog.dismiss()
-                if (position == 0x01) {   //上传到设备
-                    dialBean.imgUrl = imagFile.path
-                    if (isGif) {
-                        dealWidthGif(imagFile.path)
-                    } else {
-                        setDialToDevice(byteArrayOf(0x00))
-                    }
-                }
-                if (position == 0x02) {   //删除动画
-                    showDeleteDialog(imagFile)
-                }
-                if (position == 0x03) {   //自定义速度
-                    val intent = Intent(this@SecondGifHomeActivity, SecondGifSpeedActivity::class.java)
-                    startActivityForResult(intent, 1001)
+        dialog.setOnCommClickListener { position ->
+            dialog.dismiss()
+            if (position == 0x01) {   //上传到设备
+                dialBean.imgUrl = imagFile.path
+                if (isGif) {
+                    dealWidthGif(imagFile.path)
+                } else {
+                    setDialToDevice(byteArrayOf(0x00))
                 }
             }
-        })
+            if (position == 0x02) {   //删除动画
+                showDeleteDialog(imagFile,index)
+            }
+            if (position == 0x03) {   //自定义速度
+                val bean = gifHistoryList[index]
+                val intent = Intent(this@SecondGifHomeActivity, SecondGifSpeedActivity::class.java)
+                intent.putExtra("file_url",bean.fileUrl)
+                intent.putExtra("gif_speed",bean.gifSpeed)
+                intent.putExtra("is_new_file",false)
+                intent.putExtra("save_time",bean.saveTime)
+                intent.putExtra("update_speed",true)
+                intent.putExtra("gif_speed",bean.gifSpeed)
+                intent.putExtra("index",index)
+                startActivityForResult(intent, 1001)
+            }
+        }
 
         val window = dialog.window
         val windowLayout = window?.attributes
@@ -373,21 +463,30 @@ class SecondGifHomeActivity : AppActivity() {
     }
 
     //提示删除的弹窗
-    private fun showDeleteDialog(file : File) {
+    private fun showDeleteDialog(file : File,index : Int) {
 
         val dialog = DeleteDeviceDialog(this, com.bonlala.base.R.style.BaseDialogTheme)
         dialog.show()
         dialog.setTitleTxt(resources.getString(R.string.string_delete_alert))
-        dialog.setOnCommClickListener(object : OnCommItemClickListener {
-            override fun onItemClick(position: Int) {
-                dialog.dismiss()
-                if (position == 0x01) {   //确定
-                    file.delete()
-                    Glide.with(this@SecondGifHomeActivity).load(R.mipmap.ic_second_add_gif).into(secondCusGifImageView!!)
+        dialog.setOnCommClickListener { position ->
+            dialog.dismiss()
+            if (position == 0x01) {   //确定
+                file.delete()
+//                Glide.with(this@SecondGifHomeActivity).load(R.mipmap.ic_second_add_gif)
+//                    .into(secondCusGifImageView!!)
+                val recordId = gifHistoryList.get(index)._id
+                gifViewModel?.deleteFileRecord(recordId.toLong())
+                gifHistoryList.removeAt(index)
+                if(gifHistoryList.size==20){
+                    val selectBean = GifHistoryBean()
+                    selectBean.fileUrl = "+"
+                    selectBean.deviceType = if(isSecondDevice) 2 else 1
+                    selectBean.isDefaultAni = false
+                    gifHistoryList.add(selectBean)
                 }
+                gifHistoryAdapter?.notifyDataSetChanged()
             }
-
-        })
+        }
         val window = dialog.window
         val windowLayout = window?.attributes
         val metrics2: DisplayMetrics = resources.displayMetrics
@@ -490,14 +589,11 @@ class SecondGifHomeActivity : AppActivity() {
                     Manifest.permission.CAMERA,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE
                 )
-            ).request(object : OnPermissionCallback {
-                override fun onGranted(permissions: MutableList<String>, all: Boolean) {
-                    if (all) {
-                        openCamera()
-                    }
+            ).request { permissions, all ->
+                if (all) {
+                    openCamera()
                 }
-
-            })
+            }
         }
     }
 
@@ -605,37 +701,79 @@ class SecondGifHomeActivity : AppActivity() {
 
                 val resultBitmap = Bitmap.createBitmap(b, x, y, if(isFirst)320 else 390, if(isFirst) 172 else 390)
 
-                if(isSecondDevice){
-                    Glide.with(this).load(resultBitmap).transform(MultiTransformation(CenterCrop(), CircleCrop())).into(secondCusGifImageView!!)
-                }else{
-                    Glide.with(this).load(resultBitmap).into(secondCusGifImageView!!)
-                }
-
-                ImageUtils.saveMyBitmap(resultBitmap, saveCropPath)
-
-                Timber.e("-------裁剪后的图片=" + (File(saveCropPath)).path)
+//                if(isSecondDevice){
+//                    Glide.with(this).load(resultBitmap).transform(MultiTransformation(CenterCrop(), CircleCrop())).into(secondCusGifImageView!!)
+//                }else{
+//                    Glide.with(this).load(resultBitmap).into(secondCusGifImageView!!)
+//                }
+//
+//                ImageUtils.saveMyBitmap(resultBitmap, saveCropPath)
+//
+//                Timber.e("-------裁剪后的图片=" + (File(saveCropPath)).path)
                 val url = File(saveCropPath).path
-                dialBean.imgUrl = url
+//                dialBean.imgUrl = url
                 gifStringBuffer.append("----------->>>>裁剪后图片的地址=$url\n")
-                setDialToDevice(byteArrayOf(0x00))
+
+               val recordBean =  DbManager.getInstance().saveGifHistoryRecord(url,if(isSecondDevice) 2 else 1,1,false,System.currentTimeMillis())
+               if(recordBean ==null){
+                   return
+               }
+                gifHistoryList.add(gifHistoryList.size-1,recordBean)
+                if(gifHistoryList.size == 21){
+                    gifHistoryList.removeAt(20)
+                }
+                gifHistoryAdapter?.notifyDataSetChanged()
+
+               // setDialToDevice(byteArrayOf(0x00))
             }
 
         }
 
 
         if (requestCode == 1001) {
-            val url = data?.getStringExtra("url")
+            val bundle = data?.getBundleExtra("gif_bundle")
+            if(bundle == null){
+                return
+            }
+            //是否是修改速度
+            val isUpdateSpeed = bundle.getBoolean("is_update_speed",false)
+            if(isUpdateSpeed){
+                val index = bundle.getInt("index",1)
+                val speed = bundle.getInt("gif_speed",5)
+                val bean = gifHistoryList[index]
+                gifViewModel?.updateGifRecord(bean,speed)
+                gifHistoryAdapter?.notifyItemChanged(index)
 
+                return
+            }
+
+            val url = bundle.getString("url")
+            val save_time = bundle.getLong("save_time")
 
             Timber.e("------url=" + url)
             if (url != null) {
-                if(isSecondDevice){
-                    Glide.with(this).load(url).transform(MultiTransformation(CenterCrop(), CircleCrop())).into(secondCusGifImageView!!)
-                }else{
-                    Glide.with(this).load(url).into(secondCusGifImageView!!)
+//                if(isSecondDevice){
+//                    Glide.with(this).load(url).transform(MultiTransformation(CenterCrop(), CircleCrop())).into(secondCusGifImageView!!)
+//                }else{
+//                    Glide.with(this).load(url).into(secondCusGifImageView!!)
+//                }
+                val currentTime = save_time
+                val newGifNameFile = url
+//                FileUtils.copySdcardFile(url,newGifNameFile)
+                val recordBean = DbManager.getInstance().saveGifHistoryRecord(newGifNameFile,if(isSecondDevice) 2 else 1,MmkvUtils.getGifSpeed(),true,currentTime)
+              //  gifHistoryList.add(recordBean)
+
+                if(recordBean ==null){
+                    return
+                }
+                gifHistoryList.add(gifHistoryList.size-1,recordBean)
+                if(gifHistoryList.size == 21){
+                    gifHistoryList.removeAt(20)
                 }
 
-                dealWidthGif(url)
+                gifHistoryAdapter?.notifyDataSetChanged()
+
+               // dealWidthGif(url)
             }
 
         }

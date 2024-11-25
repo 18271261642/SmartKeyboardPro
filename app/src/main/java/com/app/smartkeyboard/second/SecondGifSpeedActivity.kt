@@ -3,6 +3,7 @@ package com.app.smartkeyboard.second
 import android.app.Activity
 import android.content.Intent
 import android.os.Build
+import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
 import android.os.Looper
@@ -15,6 +16,7 @@ import com.app.smartkeyboard.R
 import com.app.smartkeyboard.action.AppActivity
 import com.app.smartkeyboard.ble.DeviceTypeConst
 import com.app.smartkeyboard.gif.GifMaker
+import com.app.smartkeyboard.utils.BikeUtils
 import com.app.smartkeyboard.utils.ImageUtils
 import com.app.smartkeyboard.utils.MmkvUtils
 import com.hjq.shape.view.ShapeTextView
@@ -45,7 +47,19 @@ class SecondGifSpeedActivity : AppActivity() {
 
     var gifMaker: GifMaker? = null
 
+    //gif在SD卡中完整的路径
+    private var recordGifUrl : String ?= null
 
+    //生成文件的时间戳名称
+    private var gifFileTimeName : String ?= null
+    private var gifCreateLongTime = 0L
+
+    //是否是修改速度
+    private var isUpdateSpeed = false
+    //修改的下标
+    private var updateIndex = 0
+    //速度
+    private var gifSpeed = 5
     private var isSecondDevice = false
 
     private val handlers: Handler = object : Handler(Looper.getMainLooper()) {
@@ -56,7 +70,7 @@ class SecondGifSpeedActivity : AppActivity() {
 //                Timber.e("-----路径="+previewFile.path)
 //                Glide.with(this@CustomSpeedActivity).asGif().load(previewFile).into(previewGifImageView!!)
 
-                val previewFile = File(gifPath + "/previews.gif")
+                val previewFile = File("$gifPath/$gifFileTimeName.gif")
                 dialFileUrl = previewFile.path
                 Timber.e("-----previewFile=" + previewFile.path)
                 val gifDrawable = GifDrawable(previewFile)
@@ -97,7 +111,13 @@ class SecondGifSpeedActivity : AppActivity() {
         //确定
         findViewById<ShapeTextView>(R.id.secondGifConfirmTv).setOnClickListener {
             val intent = Intent()
-            intent.putExtra("url",dialFileUrl)
+            val bundle = Bundle()
+            bundle.putString("url",dialFileUrl)
+            bundle.putLong("save_time",gifCreateLongTime)
+            bundle.putBoolean("is_update_speed",isUpdateSpeed)
+            bundle.putInt("gif_speed",gifSpeed)
+            bundle.putInt("index",updateIndex) //修改的下标
+            intent.putExtra("gif_bundle",bundle)
             this.setResult(Activity.RESULT_OK,intent)
             finish()
         }
@@ -124,7 +144,6 @@ class SecondGifSpeedActivity : AppActivity() {
                 }
                 secondGifSpeedTv?.text = progress.toString()
 
-
                 if (progress != null) {
                     changeGifSpeed(progress)
                 }
@@ -136,12 +155,32 @@ class SecondGifSpeedActivity : AppActivity() {
     override fun initData() {
         isSecondDevice= BaseApplication.getBaseApplication().deviceTypeConst== DeviceTypeConst.DEVICE_SECOND
         gifPath = getExternalFilesDir(Environment.DIRECTORY_DCIM)?.path
-        val speed = MmkvUtils.getGifSpeed()
+
+
+
+
+        val isNewFile = intent.getBooleanExtra("is_new_file",true)
+        if(isNewFile){
+            gifSpeed = MmkvUtils.getGifSpeed()
+            isUpdateSpeed = false
+            gifCreateLongTime = System.currentTimeMillis()
+        }else{
+            gifSpeed = intent.getIntExtra("gif_speed",5)
+            updateIndex = intent.getIntExtra("index",1)
+            isUpdateSpeed = true
+            gifCreateLongTime = intent.getLongExtra("save_time",System.currentTimeMillis())
+        }
+        val speed = gifSpeed
         secondSpeedSeekBar?.max = 10
         secondSpeedSeekBar?.progress = speed
         secondGifSpeedTv?.text = speed.toString()
 
+
         val url = intent.getStringExtra("file_url")
+        val recordSpeed = intent.getIntExtra("gif_speed",5)
+        gifFileTimeName = BikeUtils.getFormatDate(gifCreateLongTime,"yyyy-MM-dd HH:mm:ss")
+
+
         Timber.e("-----url=" + url)
         //先判断一下已经选择过的是否存在，存在就显示
         val historyFile = File(gifPath + "/previews.gif")
@@ -199,7 +238,7 @@ class SecondGifSpeedActivity : AppActivity() {
             }
         }
         GlobalScope.launch {
-            gifMaker?.makeGif(gifList, gifPath + "/previews.gif", realSpeed * 30)
+            gifMaker?.makeGif(gifList, "$gifPath/$gifFileTimeName.gif", realSpeed * 30)
         }
     }
 
@@ -220,7 +259,7 @@ class SecondGifSpeedActivity : AppActivity() {
         GlobalScope.launch {
             markGif.makeGif(pickList, gifPath + "/previews.gif", realSpeed * 30)
         }
-
+        gifSpeed = speed
         MmkvUtils.saveGifSpeed(speed)
     }
 

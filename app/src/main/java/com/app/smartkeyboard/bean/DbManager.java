@@ -1,5 +1,6 @@
 package com.app.smartkeyboard.bean;
 
+import com.app.smartkeyboard.utils.BikeUtils;
 import com.google.gson.Gson;
 
 import org.litepal.LitePal;
@@ -152,6 +153,82 @@ public class DbManager {
         }catch (Exception e){
             e.printStackTrace();
             return -1;
+        }
+
+    }
+
+    //保存GIF的记录
+    public  GifHistoryBean saveGifHistoryRecord(String fileUrl,int deviceType,int gifSpeed,boolean isGif,long time){
+        try {
+            String timeStr = BikeUtils.getFormatDate(time,"yyyy-MM-dd HH:mm:ss");
+            GifHistoryBean saveBean = getGifRecordByTime(timeStr);
+            GifHistoryBean bean = new GifHistoryBean();
+            bean.setDefaultAni(false);
+            bean.setDeviceType(deviceType);
+            bean.setSaveTime(time);
+            bean.setGifSpeed(gifSpeed);
+            bean.setSaveTimeStr(timeStr);
+            bean.setFileUrl(fileUrl);
+            bean.setGifType(isGif);
+            if(saveBean == null){
+                bean.save();
+            }else{
+                long id = saveBean.get_id();
+                bean.update(id);
+            }
+            return bean;
+        }catch (Exception e){
+           e.printStackTrace();
+           return null;
+        }
+
+    }
+
+    //根据id修改速度
+    public void updateGifRecordSpeedById(GifHistoryBean recordBean,int speed){
+        try {
+            GifHistoryBean bean = new GifHistoryBean();
+            bean.setGifSpeed(speed);
+            bean.setFileUrl(recordBean.getFileUrl());
+            bean.setSaveTimeStr(recordBean.getSaveTimeStr());
+            bean.setDeviceType(recordBean.getDeviceType());
+            bean.setDefaultAni(recordBean.isDefaultAni());
+            bean.setSaveTime(recordBean.getSaveTime());
+            int update = bean.update(recordBean.get_id());
+            Timber.e("---------修改记录="+update);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+
+    //查询所有的GIF记录
+    public  List<GifHistoryBean> queryAllGifRecord(){
+        try {
+            List<GifHistoryBean> list = LitePal.findAll(GifHistoryBean.class);
+            return list == null || list.isEmpty() ? null : list;
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public  GifHistoryBean getGifRecordByTime(String timeStr){
+        try {
+            List<GifHistoryBean> list = LitePal.where("saveTimeStr = ?",timeStr).find(GifHistoryBean.class);
+            return list == null || list.isEmpty() ? null : list.get(0);
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public void deleteGifRecordByTime(long id){
+        try {
+            LitePal.delete(GifHistoryBean.class,id);
+        }catch (Exception e){
+            e.printStackTrace();
         }
 
     }

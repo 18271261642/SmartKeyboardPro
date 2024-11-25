@@ -290,6 +290,7 @@ public class BaseApplication extends BleApplication {
     }
 
     public DeviceTypeConst getDeviceTypeConst() {
+        Timber.e("---------设备类型="+deviceTypeConst);
         return deviceTypeConst;
 
 //        return DeviceTypeConst.DEVICE_SECOND;

@@ -700,6 +700,7 @@ public class FileUtils {
             return true;
 
         } catch (Exception ex) {
+            ex.printStackTrace();
             return false;
         }
     }
