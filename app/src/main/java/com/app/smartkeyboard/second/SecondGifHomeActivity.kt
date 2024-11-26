@@ -156,7 +156,7 @@ class SecondGifHomeActivity : AppActivity() {
     }
 
     override fun initView() {
-        isSecondDevice= BaseApplication.getBaseApplication().deviceTypeConst==DeviceTypeConst.DEVICE_SECOND || BaseApplication.getBaseApplication().deviceTypeConst==DeviceTypeConst.DEVICE_THIRD
+        isSecondDevice= BaseApplication.getBaseApplication().deviceTypeConst==DeviceTypeConst.DEVICE_SECOND
         gifHomeRecyclerView = findViewById(R.id.gifHomeRecyclerView)
         val gridLayoutManager = GridLayoutManager(this,2)
         gridLayoutManager.orientation = GridLayoutManager.VERTICAL
@@ -368,13 +368,8 @@ class SecondGifHomeActivity : AppActivity() {
                 val array = byteArrayOf(0x09, 0x01, 0x00)
                 val resultArray = Utils.getFullPackage(array)
                 Timber.e("----------array="+Utils.formatBtArrayToString(resultArray))
-                BaseApplication.getBaseApplication().bleOperate.writeCommonByte(resultArray,object :
-                    WriteBackDataListener {
-                    override fun backWriteData(data: ByteArray?) {
-                        Timber.e("-------result="+Utils.formatBtArrayToString(data))
-                    }
-
-                })
+                BaseApplication.getBaseApplication().bleOperate.writeCommonByte(resultArray
+                ) { data -> Timber.e("-------result=" + Utils.formatBtArrayToString(data)) }
             }
 
             R.id.secondGifCusLayout -> {  //自定义
@@ -557,13 +552,11 @@ class SecondGifHomeActivity : AppActivity() {
                 Permission.READ_MEDIA_IMAGES,Permission.READ_MEDIA_VIDEO
 
             )
-        ).request(object : OnPermissionCallback {
-            override fun onGranted(permissions: MutableList<String>, all: Boolean) {
-                if (all) {
-                    choosePick()
-                }
+        ).request { permissions, all ->
+            if (all) {
+                choosePick()
             }
-        })
+        }
     }
 
 
@@ -687,7 +680,7 @@ class SecondGifHomeActivity : AppActivity() {
             //裁剪后的图片地址
             val cropFile = File(saveCropPath)
             if (cropFile != null) {
-                val isFirst = BaseApplication.getBaseApplication().deviceTypeConst==DeviceTypeConst.DEVICE_FIRST
+                val isFirst = BaseApplication.getBaseApplication().deviceTypeConst==DeviceTypeConst.DEVICE_FIRST || BaseApplication.getBaseApplication().deviceTypeConst==DeviceTypeConst.DEVICE_FIRST|| BaseApplication.getBaseApplication().deviceTypeConst==DeviceTypeConst.DEVICE_THIRD
                 val b = BitmapFactory.decodeFile(cropFile.path) ?: return
 
                 Timber.e("-------xy="+b.width+" h="+b.height)
@@ -707,11 +700,11 @@ class SecondGifHomeActivity : AppActivity() {
 //                    Glide.with(this).load(resultBitmap).into(secondCusGifImageView!!)
 //                }
 //
-//                ImageUtils.saveMyBitmap(resultBitmap, saveCropPath)
+                ImageUtils.saveMyBitmap(resultBitmap, saveCropPath)
 //
 //                Timber.e("-------裁剪后的图片=" + (File(saveCropPath)).path)
                 val url = File(saveCropPath).path
-//                dialBean.imgUrl = url
+                dialBean.imgUrl = url
                 gifStringBuffer.append("----------->>>>裁剪后图片的地址=$url\n")
 
                val recordBean =  DbManager.getInstance().saveGifHistoryRecord(url,if(isSecondDevice) 2 else 1,1,false,System.currentTimeMillis())
@@ -724,7 +717,7 @@ class SecondGifHomeActivity : AppActivity() {
                 }
                 gifHistoryAdapter?.notifyDataSetChanged()
 
-               // setDialToDevice(byteArrayOf(0x00))
+                setDialToDevice(byteArrayOf(0x00))
             }
 
         }
@@ -773,7 +766,7 @@ class SecondGifHomeActivity : AppActivity() {
 
                 gifHistoryAdapter?.notifyDataSetChanged()
 
-               // dealWidthGif(url)
+                dealWidthGif(url)
             }
 
         }
