@@ -530,7 +530,7 @@ class SecondGifHomeActivity : AppActivity() {
         Timber.e("------VERSION="+Build.VERSION.SDK_INT)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
 
-            XXPermissions.with(this).permission(Manifest.permission.READ_MEDIA_IMAGES).request { permissions, allGranted ->
+            XXPermissions.with(this).permission(Manifest.permission.READ_MEDIA_IMAGES,Manifest.permission.CAMERA).request { permissions, allGranted ->
                 if(allGranted){
                     choosePick()
                 }

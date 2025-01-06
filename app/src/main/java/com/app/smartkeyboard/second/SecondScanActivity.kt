@@ -365,6 +365,12 @@ class SecondScanActivity : AppActivity() {
     private val onMenuClick : OnCommMenuClickListener = object : OnCommMenuClickListener{
         override fun onItemClick(position: Int) {
             val service = BaseApplication.getBaseApplication().connStatusService
+            if(list.isNullOrEmpty()){
+                return
+            }
+            if(position> list?.size!!){
+                return
+            }
             val bean = list?.get(position)
             if (bean != null) {
 //                if(BaseApplication.getBaseApplication().connStatus == ConnStatus.CONNECTING){
