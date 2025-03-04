@@ -35,7 +35,9 @@ import com.tencent.mmkv.MMKV;
 import org.litepal.LitePal;
 
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -43,7 +45,9 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 
+import okhttp3.ConnectionPool;
 import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
 import timber.log.Timber;
 
 /**
@@ -149,15 +153,26 @@ public class BaseApplication extends BleApplication {
 
 
     private void initNet(){
-        OkHttpRetryInterceptor.Builder builder = new OkHttpRetryInterceptor.Builder();
-        builder.build();
+//        OkHttpRetryInterceptor.Builder builder = new OkHttpRetryInterceptor.Builder();
+//        builder.build();
+//        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+//                .sslSocketFactory(Objects.requireNonNull(createSSLSocketFactory()),new TrustAllCerts())
+//                .hostnameVerifier(new TrustAllHostnameVerifier())
+//                .connectTimeout(0, TimeUnit.SECONDS)
+//                .readTimeout(0,TimeUnit.SECONDS)
+//                .writeTimeout(0,TimeUnit.SECONDS)
+////                .addInterceptor(new OkHttpRetryInterceptor(builder))
+//                .build();
+
+
+        List<Protocol> list = new ArrayList<>();
+        list.add(Protocol.HTTP_1_1);
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
-                .sslSocketFactory(Objects.requireNonNull(createSSLSocketFactory()),new TrustAllCerts())
-                .hostnameVerifier(new TrustAllHostnameVerifier())
-                .connectTimeout(0, TimeUnit.SECONDS)
-                .readTimeout(0,TimeUnit.SECONDS)
-                .writeTimeout(0,TimeUnit.SECONDS)
-//                .addInterceptor(new OkHttpRetryInterceptor(builder))
+                .connectTimeout(20 * 1000, TimeUnit.SECONDS)
+                .readTimeout(20 * 1000,TimeUnit.SECONDS)
+                .connectionPool(new ConnectionPool(0,1,TimeUnit.NANOSECONDS))
+                .protocols(list)
+                .retryOnConnectionFailure(false)
                 .build();
 
         //是否是中文
