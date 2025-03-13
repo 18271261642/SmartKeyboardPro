@@ -7,6 +7,9 @@ import android.net.Uri;
 import android.provider.MediaStore;
 
 
+import com.app.smartkeyboard.BaseApplication;
+import com.app.smartkeyboard.ble.DeviceTypeConst;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -122,19 +125,52 @@ public class ImageUtils {
             if (size == 0) {
                 return lt;
             }
-            if (size > 9) {
+
+            boolean isThird = BaseApplication.getBaseApplication().getDeviceTypeConst() == DeviceTypeConst.DEVICE_THIRD;
+            if(isThird){
                 List<Bitmap> bigList = new ArrayList<>();
-                int number = size / 9;
-                Timber.e("-------number=" + number);
-                for (int k = 0; k < size; k += number) {
-                    if ((k + number) < size) {
-                        bigList.add(lt.get(k));
+                if(size>50){
+                    int number = size / 50;
+                    Timber.e("-------number=" + number);
+                    for (int k = 0; k < size; k += number) {
+                        if ((k + number) < size) {
+                            bigList.add(lt.get(k));
+                        }
                     }
+                   // bigList.addAll(lt.subList(0,18));
+                }else{
+                    bigList.addAll(lt);
                 }
                 return bigList;
-            } else {
-                return lt;
+            }else{
+                if (size > 9) {
+                    List<Bitmap> bigList = new ArrayList<>();
+                    int number = size / 9;
+                    Timber.e("-------number=" + number);
+                    for (int k = 0; k < size; k += number) {
+                        if ((k + number) < size) {
+                            bigList.add(lt.get(k));
+                        }
+                    }
+                    return bigList;
+                } else {
+                    return lt;
+                }
             }
+
+//            if (size > 9) {
+//                List<Bitmap> bigList = new ArrayList<>();
+//                int number = size / 9;
+//                Timber.e("-------number=" + number);
+//                for (int k = 0; k < size; k += number) {
+//                    if ((k + number) < size) {
+//                        bigList.add(lt.get(k));
+//                    }
+//                }
+//                return bigList;
+//            } else {
+//                return lt;
+//            }
 
         } catch (Exception e) {
             e.printStackTrace();

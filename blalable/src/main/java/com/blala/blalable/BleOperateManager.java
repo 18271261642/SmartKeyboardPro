@@ -231,7 +231,7 @@ public class BleOperateManager {
                     int secondStr = data[13] & 0xff;
                     int thirdStr = data[14] & 0xff;
                     String version = "V" + oneStr + "." + secondStr + "." + thirdStr;
-
+                    Log.e(TAG,"----------几代产品="+type);
                     //将16进制转换成10进制
                     int versionCode = Utils.getIntFromBytes((byte) 0x00,data[12],data[13],data[14]);
 
